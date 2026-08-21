@@ -79,10 +79,22 @@ export default function HomePage() {
     }
   };
 
+  const trackClick = (subId?: string) => {
+    const id = subId || convertedData?.subId;
+    if (id) {
+      fetch('/api/track-click', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subId: id }),
+      }).catch(() => {});
+    }
+  };
+
   const handleCopyLink = () => {
     if (!convertedData?.affiliateUrl) return;
     navigator.clipboard.writeText(convertedData.affiliateUrl);
     setCopied(true);
+    trackClick(convertedData.subId);
     toast.success('Đã sao chép link hoàn tiền vào bộ nhớ tạm!');
     setTimeout(() => setCopied(false), 2500);
   };
@@ -197,7 +209,10 @@ export default function HomePage() {
                       </button>
 
                       <button
-                        onClick={() => setShowQrModal(true)}
+                        onClick={() => {
+                          setShowQrModal(true);
+                          trackClick(convertedData.subId);
+                        }}
                         title="Quét mã mở App Shopee"
                         className="p-2 rounded-lg bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 hover:border-shopee-400 transition-colors"
                       >
@@ -208,6 +223,7 @@ export default function HomePage() {
                         href={convertedData.affiliateUrl}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={() => trackClick(convertedData.subId)}
                         className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-bold rounded-lg gradient-shopee text-white shadow-xs hover:opacity-95 transition-all"
                       >
                         <span>Mở Shopee Mua Ngay</span>
@@ -250,54 +266,58 @@ export default function HomePage() {
       <section id="bang-tinh" className="max-w-5xl mx-auto px-4 sm:px-6">
         <div className="text-center space-y-3 mb-10">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
-            Bảng Tính Minh Bạch 60% Hoa Hồng
+            Bảng Tính Minh Bạch 60% Tiền Hoa Hồng
           </h2>
-          <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
-            Tiền hoàn được tính dựa trên <strong>60% số tiền hoa hồng</strong> mà Shopee chi trả cho mỗi đơn hàng thành công.
+          <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+            Hệ thống tính tiền hoàn <strong>dựa trên số tiền hoa hồng thực tế</strong> mà Shopee chi trả cho từng sản phẩm của bạn. Shop trả bao nhiêu, bạn nhận lại đúng <strong>60%</strong> bấy nhiêu!
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md">
           
-          {/* Cột Trái: Bộ điều khiển */}
+          {/* Cột Trái: Nhập Hoa Hồng Thực Tế Của Sản Phẩm */}
           <div className="md:col-span-6 space-y-6">
             <div>
               <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                Giá Trị Đơn Hàng Shopee:
+                Số Tiền Hoa Hồng Shopee Chi Trả Cho Sản Phẩm (VNĐ):
               </label>
-              <div className="flex items-center gap-3">
+              
+              <div className="relative">
                 <input
-                  type="range"
-                  min={100000}
-                  max={10000000}
-                  step={50000}
-                  value={calcPrice}
-                  onChange={(e) => setCalcPrice(Number(e.target.value))}
-                  className="w-full accent-shopee-500 cursor-pointer h-2 bg-slate-200 dark:bg-slate-700 rounded-lg"
+                  type="number"
+                  min={1000}
+                  step={5000}
+                  value={totalCommission}
+                  onChange={(e) => {
+                    const val = Math.max(0, Number(e.target.value));
+                    setCalcPrice(val);
+                    setCalcRate(100);
+                  }}
+                  className="w-full pl-4 pr-16 py-3.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-extrabold text-slate-900 dark:text-white text-lg focus:ring-2 focus:ring-shopee-500 focus:outline-none"
                 />
-                <span className="text-base font-extrabold text-shopee-600 dark:text-shopee-400 shrink-0 min-w-[120px] text-right">
-                  {calcPrice.toLocaleString('vi-VN')} đ
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-sm">
+                  VNĐ
                 </span>
               </div>
-            </div>
 
-            <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                Ngành Hàng / Mức Hoa Hồng Shopee:
-              </label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {/* Mức chọn nhanh */}
+              <div className="flex flex-wrap gap-2 mt-3">
                 {[
-                  { label: 'Thời trang (12%)', rate: 12 },
-                  { label: 'Làm đẹp (10%)', rate: 10 },
-                  { label: 'Gia dụng (8%)', rate: 8 },
-                  { label: 'Điện tử (4%)', rate: 4 },
+                  { label: '20.000 đ', val: 20000 },
+                  { label: '50.000 đ', val: 50000 },
+                  { label: '100.000 đ', val: 100000 },
+                  { label: '200.000 đ', val: 200000 },
+                  { label: '500.000 đ', val: 500000 },
                 ].map((item) => (
                   <button
-                    key={item.rate}
+                    key={item.val}
                     type="button"
-                    onClick={() => setCalcRate(item.rate)}
-                    className={`py-2 px-3 text-xs font-bold rounded-xl border transition-all ${
-                      calcRate === item.rate
+                    onClick={() => {
+                      setCalcPrice(item.val);
+                      setCalcRate(100);
+                    }}
+                    className={`py-1.5 px-3 text-xs font-bold rounded-lg border transition-all ${
+                      totalCommission === item.val
                         ? 'border-shopee-500 bg-shopee-50 text-shopee-600 dark:bg-shopee-950/50 dark:text-shopee-400'
                         : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 text-slate-600 dark:text-slate-400'
                     }`}
@@ -308,44 +328,59 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="text-xs text-slate-500 dark:text-slate-400 space-y-1">
-              <p>• Mức hoa hồng Shopee dao động từ 3% - 15% tùy theo ngành hàng.</p>
-              <p>• Rút tiền mặt ngay khi số dư ví tích lũy đạt từ <strong>50.000 VNĐ</strong>.</p>
+            <div className="p-3.5 rounded-2xl bg-orange-50/70 dark:bg-orange-950/30 border border-orange-200/70 dark:border-orange-800/40 text-xs text-orange-900 dark:text-orange-200 space-y-1.5">
+              <p className="font-bold flex items-center gap-1.5 text-shopee-600 dark:text-shopee-400">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Quy tắc hoàn tiền công bằng & chính xác 100%:</span>
+              </p>
+              <p className="text-[11px] leading-relaxed">
+                Mỗi sản phẩm trên Shopee có mức tiền hoa hồng khác nhau tùy theo chương trình của Người Bán. Khi đơn hàng hoàn tất, bạn sẽ nhận được đúng <strong>60% tổng số tiền hoa hồng thực nhận</strong> được chuyển thẳng vào ví để rút về tài khoản ngân hàng.
+              </p>
             </div>
           </div>
 
-          {/* Cột Phải: Kết Quả Trực Quan */}
+          {/* Cột Phải: Phân Bổ Tiền Minh Bạch 60/40 */}
           <div className="md:col-span-6 bg-slate-50 dark:bg-slate-800/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-4">
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-              Phân Bổ Tiền Hoa Hồng ({calcRate}%):
+            <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              Kết Quả Phân Bổ Tiền Thật:
             </h3>
 
             <div className="space-y-3">
               <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-500 dark:text-slate-400">Tổng hoa hồng Shopee trả (100%):</span>
-                <span className="font-semibold text-slate-800 dark:text-slate-200">
+                <span className="text-slate-600 dark:text-slate-300 font-medium">Hoa hồng Shopee chi trả (100%):</span>
+                <span className="font-extrabold text-slate-900 dark:text-white text-base">
                   {totalCommission.toLocaleString('vi-VN')} đ
                 </span>
               </div>
 
-              <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 flex justify-between items-center">
+              {/* Khách nhận 60% */}
+              <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 flex justify-between items-center shadow-xs">
                 <div>
-                  <div className="text-xs font-bold text-emerald-800 dark:text-emerald-300 uppercase">
-                    Bạn Được Hoàn Lại (60%):
+                  <div className="text-xs font-black text-emerald-800 dark:text-emerald-300 uppercase tracking-wide">
+                    💰 Tiền Bạn Nhận Về Ví (60%):
                   </div>
-                  <div className="text-[11px] text-emerald-600 dark:text-emerald-400">
-                    Cộng trực tiếp vào ví để rút tiền mặt
+                  <div className="text-[11px] text-emerald-600 dark:text-emerald-400 mt-0.5 font-medium">
+                    Tích lũy rút tiền mặt về thẻ ngân hàng
                   </div>
                 </div>
-                <div className="text-xl font-black text-emerald-600 dark:text-emerald-400">
-                  +{userCashback.toLocaleString('vi-VN')} đ
+                <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
+                  +{Math.round(totalCommission * 0.6).toLocaleString('vi-VN')} đ
                 </div>
               </div>
 
-              <div className="flex justify-between items-center text-xs text-slate-400 pt-1">
-                <span>Lợi nhuận duy trì hệ thống (40%):</span>
-                <span>{adminProfit.toLocaleString('vi-VN')} đ</span>
+              {/* Admin nhận 40% */}
+              <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex justify-between items-center text-xs">
+                <span className="text-slate-500 dark:text-slate-400 font-medium">
+                  Phí vận hành & duy trì hệ thống (40%):
+                </span>
+                <span className="font-bold text-slate-700 dark:text-slate-300">
+                  {Math.round(totalCommission * 0.4).toLocaleString('vi-VN')} đ
+                </span>
               </div>
+            </div>
+
+            <div className="text-[11px] text-slate-400 text-center pt-1">
+              Hạn mức rút tiền tối thiểu: <strong>50.000 VNĐ</strong> qua VietQR 24/7.
             </div>
           </div>
 

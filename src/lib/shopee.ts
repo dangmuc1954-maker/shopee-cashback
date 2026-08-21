@@ -16,9 +16,9 @@ export function cleanShopeeUrl(url: string): string {
     }
     const parsed = new URL(clean);
     
-    // Nếu là domain shopee.vn chính, lọc bỏ các query param rác như sp_atk, xptdk
+    // Nếu là domain shopee.vn chính, lọc bỏ các query param rác
     if (parsed.hostname.includes('shopee.vn') && !parsed.hostname.startsWith('s.')) {
-      const allowedParams = ['shopid', 'itemid'];
+      const allowedParams = ['shopid', 'itemid', 'sp_atk', 'xptdk'];
       const searchParams = new URLSearchParams();
       parsed.searchParams.forEach((value, key) => {
         if (allowedParams.includes(key.toLowerCase())) {
@@ -36,10 +36,10 @@ export function cleanShopeeUrl(url: string): string {
 }
 
 export function generateSubId(userId: string): string {
-  // Tạo sub_id định danh duy nhất ngắn gọn: U{userId_8_ky_tu}_{timestamp_hex}
-  const cleanUserId = userId.replace(/[^a-zA-Z0-9]/g, '').slice(0, 10);
-  const randomSuffix = Math.random().toString(36).substring(2, 7);
-  return `${cleanUserId}_${randomSuffix}`;
+  // Tạo sub_id định danh duy nhất ngắn gọn không chứa ký tự đặc biệt
+  const cleanUserId = userId.replace(/[^a-zA-Z0-9]/g, '').slice(0, 8);
+  const randomSuffix = Math.random().toString(36).substring(2, 6);
+  return `${cleanUserId}${randomSuffix}`;
 }
 
 export interface ConvertLinkResult {
@@ -55,12 +55,10 @@ export function convertToAffiliateUrl(
 ): ConvertLinkResult {
   const cleanOriginal = cleanShopeeUrl(originalUrl);
   
-  // Xây dựng Shopee Universal Tracking URL gắn Affiliate ID và Sub_ID
-  // Đây là định dạng chuẩn của Shopee Affiliate Network cho phép tracking cả trên Mobile App và Web Browser
-  const encodedUrl = encodeURIComponent(cleanOriginal);
-  
-  // Format 1: Shopee an_redir Universal tracking
-  const affiliateUrl = `https://shope.ee/an_redir?origin_link=${encodedUrl}&affiliate_id=${shopeeAffId}&sub_id=${subId}`;
+  // Điểm chuyển hướng tracking chính thức của Shopee Affiliate Network (an_redir)
+  // Đây là điểm bắt buộc để Shopee tạo credential_token, uls_trackid, mmp_pid và ghi nhận hoa hồng
+  const encodedOrigin = encodeURIComponent(cleanOriginal);
+  const affiliateUrl = `https://s.shopee.vn/an_redir?origin_link=${encodedOrigin}&affiliate_id=${shopeeAffId}&sub_id=${subId}`;
 
   return {
     affiliateUrl,
