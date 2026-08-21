@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String           @id @default(cuid())
+  phone           String           @unique
+  email           String?          @unique
+  password        String
+  fullname        String?
+  role            String           @default("USER") // "USER" | "ADMIN"
+  balance         Float            @default(0) // Available cashback ready to withdraw
+  pendingBalance  Float            @default(0) // Pending Shopee order reconciliation
+  totalWithdrawn  Float            @default(0)
+  bankName        String?
+  bankAccountNo   String?
+  bankAccountName String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  links           ConvertedLink[]
+  orders          CashbackOrder[]
+  withdrawals     Withdrawal[]
+}
+
+model ConvertedLink {
+  id           String    @id @default(cuid())
+  userId       String?
+  user         User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  originalUrl  String
+  affiliateUrl String
+  subId        String    @unique
+  productTitle String?
+  clicks       Int       @default(0)
+  createdAt    DateTime  @default(now())
+}
+
+model CashbackOrder {
+  id               String    @id @default(cuid())
+  userId           String?
+  user             User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  orderSn          String    @unique // Mã đơn hàng Shopee
+  subId            String
+  itemName         String?
+  totalAmount      Float     @default(0) // Tổng tiền đơn hàng
+  shopeeCommission Float     @default(0) // Tổng hoa hồng Shopee (100%)
+  userCashback     Float     @default(0) // Hoàn cho khách (60% hoa hồng)
+  adminProfit      Float     @default(0) // Lợi nhuận Admin (40% hoa hồng)
+  status           String    @default("PENDING") // "PENDING" | "APPROVED" | "REJECTED"
+  orderTime        DateTime?
+  completedAt      DateTime?
+  createdAt        DateTime  @default(now())
+}
+
+model Withdrawal {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount          Float
+  bankName        String
+  bankAccountNo   String
+  bankAccountName String
+  status          String    @default("PENDING") // "PENDING" | "PAID" | "REJECTED"
+  adminNote       String?
+  paidAt          DateTime?
+  createdAt       DateTime  @default(now())
+}
+
+model AdminOtp {
+  id        String   @id @default(cuid())
+  phone     String
+  otpCode   String
+  expiresAt DateTime
+  isUsed    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model SystemSetting {
+  id                     String   @id @default("DEFAULT")
+  shopeeAffId            String   @default("17300000000") // ID Affiliate Shopee của Admin
+  commissionUserPercent  Float    @default(60.0) // 60% hoa hồng cho khách
+  commissionAdminPercent Float    @default(40.0) // 40% hoa hồng cho admin
+  minWithdrawAmount      Float    @default(50000.0) // Tối thiểu 50k rút tiền
+  announcement           String?  @default("Chào mừng bạn đến với hệ thống hoàn tiền Shopee 60% hoa hồng lớn nhất Việt Nam!")
+  telegramChatId         String?
+  updatedAt              DateTime @updatedAt
+}
