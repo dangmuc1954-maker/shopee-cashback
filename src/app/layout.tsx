@@ -8,9 +8,36 @@ import { Toaster } from 'sonner';
 const inter = Inter({ subsets: ['latin', 'vietnamese'] });
 
 export const metadata: Metadata = {
-  title: 'Shopee Cashback - Hoàn Tiền 60% Hoa Hồng Mua Sắm Tự Động',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://muaxamthongminh.up.railway.app'),
+  title: 'Mua Sắm Thông Minh - Hoàn 60% Hoa Hồng Shopee Tự Động',
   description:
-    'Công cụ chuyển đổi link Shopee Affiliate tự động hoàn 60% tiền hoa hồng cho người mua. Tích lũy rút tiền mặt về thẻ ngân hàng từ 50k!',
+    'Công cụ hoàn tiền Shopee số 1 Việt Nam! Dán link sản phẩm bất kỳ để nhận lại 60% tiền hoa hồng mặt. Rút tiền nhanh 24/7 về thẻ ngân hàng từ 50.000 VNĐ.',
+  keywords: [
+    'hoàn tiền shopee',
+    'shopee cashback',
+    'mua sắm thông minh',
+    'shopee affiliate',
+    'rút tiền shopee',
+    'hoàn 60% hoa hồng',
+  ],
+  authors: [{ name: 'Mua Sắm Thông Minh' }],
+  openGraph: {
+    title: 'Mua Sắm Thông Minh - Hoàn 60% Tiền Hoa Hồng Shopee',
+    description:
+      'Dán link sản phẩm Shopee bất kỳ để nhận lại 60% tiền hoa hồng mặt. Rút tiền nhanh 24/7 về mọi ngân hàng từ 50k!',
+    siteName: 'Mua Sắm Thông Minh',
+    locale: 'vi_VN',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Mua Sắm Thông Minh - Hoàn 60% Tiền Hoa Hồng Shopee',
+    description: 'Nhận lại 60% tiền hoa hồng khi mua sắm Shopee. Rút tiền mặt nhanh 24/7 từ 50k!',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
