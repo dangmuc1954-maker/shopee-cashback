@@ -119,24 +119,24 @@
     </text>
   </g>
 
-  <!-- Title: Mua Sắm Thông Minh (Font Arial chuẩn, quen mắt, chữ rõ ràng) -->
-  <text x="75" y="170" font-family="Arial, sans-serif" font-size="44" font-weight="bold" fill="#111827">
+  <!-- Title: Mua Sắm Thông Minh (Font Tahoma mượt mà, chuẩn tiếng Việt) -->
+  <text x="75" y="170" font-family="Tahoma, Verdana, sans-serif" font-size="44" font-weight="bold" fill="#111827">
     Mua Sắm Thông Minh
   </text>
 
-  <!-- Sub-banner 60% -->
+  <!-- Sub-banner 60% (Font Tahoma chuẩn) -->
   <g transform="translate(75, 200)">
     <rect width="480" height="58" rx="14" fill="#EE4D2D"/>
-    <text x="22" y="39" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#FFFFFF">
+    <text x="22" y="39" font-family="Tahoma, Verdana, sans-serif" font-size="27" font-weight="bold" fill="#FFFFFF">
       Nhận lại 60% tiền hoa hồng mặt
     </text>
   </g>
 
   <!-- Description -->
-  <text x="75" y="305" font-family="Arial, sans-serif" font-size="18" font-weight="normal" fill="#374151">
+  <text x="75" y="305" font-family="Tahoma, Verdana, sans-serif" font-size="18" font-weight="normal" fill="#374151">
     Dán link Shopee bất kỳ • Nhận tiền mặt về ví
   </text>
-  <text x="75" y="338" font-family="Arial, sans-serif" font-size="18" font-weight="normal" fill="#6B7280">
+  <text x="75" y="338" font-family="Tahoma, Verdana, sans-serif" font-size="18" font-weight="normal" fill="#6B7280">
     Rút tiền nhanh 24/7 về mọi ngân hàng từ 50.000đ
   </text>
 
