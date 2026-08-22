@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ['latin', 'vietnamese'] });
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://shopee-cashback-agoz.onrender.com'),
-  title: 'Mua Sắm Thông Minh - Hoàn 60% Hoa Hồng Shopee Tự Động',
+  title: 'Mua Sắm Thông Minh - Hoàn Tiền Nhanh Chóng',
   description:
     'Công cụ hoàn tiền Shopee số 1 Việt Nam! Dán link sản phẩm bất kỳ để nhận lại 60% tiền hoa hồng mặt. Rút tiền nhanh 24/7 về thẻ ngân hàng từ 50.000 VNĐ.',
   keywords: [
@@ -29,6 +29,14 @@ export const metadata: Metadata = {
     siteName: 'Mua Sắm Thông Minh',
     images: [
       {
+        url: 'https://shopee-cashback-agoz.onrender.com/og-image.jpg',
+        secureUrl: 'https://shopee-cashback-agoz.onrender.com/og-image.jpg',
+        width: 1200,
+        height: 630,
+        type: 'image/jpeg',
+        alt: 'Mua Sắm Thông Minh - Hoàn Tiền Nhanh Chóng',
+      },
+      {
         url: 'https://shopee-cashback-agoz.onrender.com/og-image.png',
         secureUrl: 'https://shopee-cashback-agoz.onrender.com/og-image.png',
         width: 1200,
@@ -44,7 +52,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Mua Sắm Thông Minh - Hoàn Tiền Nhanh Chóng',
     description: 'Nhận lại 60% tiền hoa hồng khi mua sắm Shopee. Rút tiền mặt nhanh 24/7 từ 50k!',
-    images: ['https://shopee-cashback-agoz.onrender.com/og-image.png'],
+    images: ['https://shopee-cashback-agoz.onrender.com/og-image.jpg'],
   },
   robots: {
     index: true,
