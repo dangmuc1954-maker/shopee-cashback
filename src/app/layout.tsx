@@ -22,17 +22,19 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: 'Mua Sắm Thông Minh' }],
   openGraph: {
-    title: 'Mua Sắm Thông Minh - Hoàn 60% Tiền Hoa Hồng Shopee',
+    title: 'Mua Sắm Thông Minh - Hoàn Tiền Nhanh Chóng',
     description:
       'Dán link sản phẩm Shopee bất kỳ để nhận lại 60% tiền hoa hồng mặt. Rút tiền nhanh 24/7 về mọi ngân hàng từ 50k!',
     url: 'https://shopee-cashback-agoz.onrender.com',
     siteName: 'Mua Sắm Thông Minh',
     images: [
       {
-        url: '/og-image.png',
+        url: 'https://shopee-cashback-agoz.onrender.com/og-image.png',
+        secureUrl: 'https://shopee-cashback-agoz.onrender.com/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Mua Sắm Thông Minh - Hoàn 60% Tiền Hoa Hồng Shopee',
+        type: 'image/png',
+        alt: 'Mua Sắm Thông Minh - Hoàn Tiền Nhanh Chóng',
       },
     ],
     locale: 'vi_VN',
@@ -40,9 +42,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Mua Sắm Thông Minh - Hoàn 60% Tiền Hoa Hồng Shopee',
+    title: 'Mua Sắm Thông Minh - Hoàn Tiền Nhanh Chóng',
     description: 'Nhận lại 60% tiền hoa hồng khi mua sắm Shopee. Rút tiền mặt nhanh 24/7 từ 50k!',
-    images: ['/og-image.png'],
+    images: ['https://shopee-cashback-agoz.onrender.com/og-image.png'],
   },
   robots: {
     index: true,
