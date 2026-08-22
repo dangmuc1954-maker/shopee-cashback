@@ -82,7 +82,9 @@ model AdminOtp {
 
 model SystemSetting {
   id                     String   @id @default("DEFAULT")
-  shopeeAffId            String   @default("17300000000") // ID Affiliate Shopee của Admin
+  shopeeAffId            String   @default("17352020564") // ID Affiliate Shopee của Admin
+  shopeeAppId            String?  // App ID từ Shopee Open API (Tùy chọn)
+  shopeeAppSecret        String?  // Secret Key từ Shopee Open API (Tùy chọn)
   commissionUserPercent  Float    @default(60.0) // 60% hoa hồng cho khách
   commissionAdminPercent Float    @default(40.0) // 40% hoa hồng cho admin
   minWithdrawAmount      Float    @default(50000.0) // Tối thiểu 50k rút tiền

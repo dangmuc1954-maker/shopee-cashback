@@ -35,6 +35,8 @@ export async function PUT(req: Request) {
 
     const {
       shopeeAffId,
+      shopeeAppId,
+      shopeeAppSecret,
       commissionUserPercent,
       commissionAdminPercent,
       minWithdrawAmount,
@@ -45,6 +47,8 @@ export async function PUT(req: Request) {
       where: { id: 'DEFAULT' },
       update: {
         ...(shopeeAffId ? { shopeeAffId: String(shopeeAffId).trim() } : {}),
+        ...(shopeeAppId !== undefined ? { shopeeAppId: shopeeAppId ? String(shopeeAppId).trim() : null } : {}),
+        ...(shopeeAppSecret !== undefined ? { shopeeAppSecret: shopeeAppSecret ? String(shopeeAppSecret).trim() : null } : {}),
         ...(commissionUserPercent !== undefined ? { commissionUserPercent: Number(commissionUserPercent) } : {}),
         ...(commissionAdminPercent !== undefined ? { commissionAdminPercent: Number(commissionAdminPercent) } : {}),
         ...(minWithdrawAmount !== undefined ? { minWithdrawAmount: Number(minWithdrawAmount) } : {}),
@@ -52,7 +56,9 @@ export async function PUT(req: Request) {
       },
       create: {
         id: 'DEFAULT',
-        shopeeAffId: String(shopeeAffId || '17300000000').trim(),
+        shopeeAffId: String(shopeeAffId || '17352020564').trim(),
+        shopeeAppId: shopeeAppId ? String(shopeeAppId).trim() : null,
+        shopeeAppSecret: shopeeAppSecret ? String(shopeeAppSecret).trim() : null,
         commissionUserPercent: Number(commissionUserPercent || 60),
         commissionAdminPercent: Number(commissionAdminPercent || 40),
         minWithdrawAmount: Number(minWithdrawAmount || 50000),

@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth';
-import { isValidShopeeUrl, convertToAffiliateUrl, generateSubId } from '@/lib/shopee';
+import { isValidShopeeUrl, convertToAffiliateUrl, generateSubId, cleanShopeeUrl } from '@/lib/shopee';
+import { generateShopeeApiShortLink } from '@/lib/shopee-api';
 
 export async function POST(req: Request) {
   try {
@@ -28,17 +29,35 @@ export async function POST(req: Request) {
       where: { id: 'DEFAULT' },
     });
 
-    const shopeeAffId = settings?.shopeeAffId || '17300000000';
+    const shopeeAffId = settings?.shopeeAffId || '17352020564';
     const userIdentifier = user ? user.id : 'GUEST';
     const subId = generateSubId(userIdentifier);
+    const cleanOriginalUrl = cleanShopeeUrl(url);
 
-    // Chuyển đổi link
-    const { affiliateUrl, cleanOriginalUrl } = convertToAffiliateUrl(url, shopeeAffId, subId);
+    let affiliateUrl = '';
 
-    // Lưu vào database nếu người dùng đã đăng nhập hoặc lưu tracking
-    let savedLink = null;
+    // Nếu Admin đã cấu hình Open API App ID & Secret Key, ưu tiên gọi thẳng Shopee API
+    if (settings?.shopeeAppId && settings?.shopeeAppSecret) {
+      const apiShortLink = await generateShopeeApiShortLink(
+        cleanOriginalUrl,
+        subId,
+        settings.shopeeAppId,
+        settings.shopeeAppSecret
+      );
+      if (apiShortLink) {
+        affiliateUrl = apiShortLink;
+      }
+    }
+
+    // Nếu không có API Key hoặc API trả về rỗng -> Sử dụng định dạng Universal Tracking s.shopee.vn/an_redir chính thức
+    if (!affiliateUrl) {
+      const conv = convertToAffiliateUrl(cleanOriginalUrl, shopeeAffId, subId);
+      affiliateUrl = conv.affiliateUrl;
+    }
+
+    // Lưu vào database
     try {
-      savedLink = await prisma.convertedLink.create({
+      await prisma.convertedLink.create({
         data: {
           userId: user ? user.id : null,
           originalUrl: cleanOriginalUrl,
