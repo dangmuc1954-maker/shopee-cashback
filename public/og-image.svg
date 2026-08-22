@@ -3,157 +3,387 @@
     <!-- Background Gradients -->
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#FF5722"/>
-      <stop offset="50%" stop-color="#EE4D2D"/>
-      <stop offset="100%" stop-color="#D83A16"/>
+      <stop offset="35%" stop-color="#EE4D2D"/>
+      <stop offset="70%" stop-color="#EA3B18"/>
+      <stop offset="100%" stop-color="#C52706"/>
     </linearGradient>
+
+    <radialGradient id="sunburstGlow" cx="70%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#FFE0B2" stop-opacity="0.55"/>
+      <stop offset="50%" stop-color="#FFCC80" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#EE4D2D" stop-opacity="0"/>
+    </radialGradient>
 
     <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#FFFFFF"/>
-      <stop offset="100%" stop-color="#FFF8F5"/>
+      <stop offset="100%" stop-color="#FFF5F0"/>
+    </linearGradient>
+
+    <!-- 3D Character Gradients -->
+    <linearGradient id="skinGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFE6D5"/>
+      <stop offset="60%" stop-color="#FFD1B3"/>
+      <stop offset="100%" stop-color="#F5B28E"/>
+    </linearGradient>
+
+    <linearGradient id="hairGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4A2810"/>
+      <stop offset="40%" stop-color="#2D1506"/>
+      <stop offset="100%" stop-color="#140802"/>
+    </linearGradient>
+
+    <linearGradient id="hairHighlight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#8D5B36" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#4A2810" stop-opacity="0"/>
+    </linearGradient>
+
+    <linearGradient id="hoodieGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="70%" stop-color="#F1F5F9"/>
+      <stop offset="100%" stop-color="#CBD5E1"/>
+    </linearGradient>
+
+    <!-- Shopee Bag 3D Gradients -->
+    <linearGradient id="bagFront" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF7A59"/>
+      <stop offset="40%" stop-color="#EE4D2D"/>
+      <stop offset="100%" stop-color="#D03415"/>
+    </linearGradient>
+
+    <linearGradient id="bagSide" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D03415"/>
+      <stop offset="100%" stop-color="#A52208"/>
+    </linearGradient>
+
+    <!-- Money Gradients (VNĐ 500.000đ Blue-Cyan) -->
+    <linearGradient id="vnd500Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="40%" stop-color="#0284C7"/>
+      <stop offset="100%" stop-color="#0369A1"/>
+    </linearGradient>
+
+    <linearGradient id="vnd200Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FB7185"/>
+      <stop offset="60%" stop-color="#E11D48"/>
+      <stop offset="100%" stop-color="#BE123C"/>
     </linearGradient>
 
     <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FFE082"/>
-      <stop offset="50%" stop-color="#FFD54F"/>
-      <stop offset="100%" stop-color="#FFB300"/>
+      <stop offset="0%" stop-color="#FFF3B0"/>
+      <stop offset="40%" stop-color="#FBBF24"/>
+      <stop offset="80%" stop-color="#D97706"/>
+      <stop offset="100%" stop-color="#92400E"/>
     </linearGradient>
 
-    <linearGradient id="shopeeOrange" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FF6B4A"/>
-      <stop offset="100%" stop-color="#EE4D2D"/>
-    </linearGradient>
-
-    <!-- Filters for 3D glow & shadow -->
-    <filter id="dropShadow" x="-10%" y="-10%" width="130%" height="130%">
-      <feDropShadow dx="0" dy="16" stdDeviation="24" flood-color="#000000" flood-opacity="0.25"/>
+    <!-- Drop Shadows & Glow -->
+    <filter id="cardShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="20" stdDeviation="30" flood-color="#000000" flood-opacity="0.3"/>
     </filter>
 
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="8" result="blur" />
-      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    <filter id="characterShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#7C1A05" flood-opacity="0.4"/>
+    </filter>
+
+    <filter id="glowGold" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <filter id="moneyGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#0284C7" flood-opacity="0.5"/>
     </filter>
   </defs>
 
-  <!-- Background -->
+  <!-- Base Background with Vibrant Glow -->
   <rect width="1200" height="630" fill="url(#bgGrad)"/>
+  <rect width="1200" height="630" fill="url(#sunburstGlow)"/>
 
-  <!-- Decorative circles -->
-  <circle cx="1100" cy="80" r="260" fill="#FFFFFF" fill-opacity="0.08"/>
-  <circle cx="100" cy="550" r="300" fill="#000000" fill-opacity="0.06"/>
-  <circle cx="950" cy="500" r="180" fill="#FFFFFF" fill-opacity="0.05"/>
+  <!-- Background decorative floating elements -->
+  <circle cx="1100" cy="90" r="280" fill="#FFFFFF" fill-opacity="0.08"/>
+  <circle cx="120" cy="560" r="260" fill="#000000" fill-opacity="0.08"/>
+  
+  <!-- Sparkles & Stars -->
+  <path d="M 680 80 L 685 95 L 700 100 L 685 105 L 680 120 L 675 105 L 660 100 L 675 95 Z" fill="#FFE082"/>
+  <path d="M 1120 280 L 1124 292 L 1136 296 L 1124 300 L 1120 312 L 1116 300 L 1104 296 L 1116 292 Z" fill="#FFF59D"/>
+  <path d="M 750 480 L 753 490 L 763 493 L 753 496 L 750 506 L 747 496 L 737 493 L 747 490 Z" fill="#FFE082"/>
 
-  <!-- Main White Card Container -->
-  <rect x="40" y="40" width="1120" height="550" rx="36" fill="url(#cardGrad)" filter="url(#dropShadow)"/>
+  <!-- MAIN CARD CONTAINER (LEFT) -->
+  <rect x="40" y="40" width="590" height="550" rx="36" fill="url(#cardGrad)" filter="url(#cardShadow)"/>
 
-  <!-- LEFT COLUMN: TEXT CONTENT -->
+  <!-- LEFT COLUMN CONTENT -->
   <!-- Top Badge -->
-  <g transform="translate(80, 85)">
-    <rect width="360" height="42" rx="21" fill="#FFF0EB" stroke="#FFC4B2" stroke-width="2"/>
-    <text x="35" y="27" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="bold" fill="#EE4D2D">
+  <g transform="translate(75, 80)">
+    <rect width="330" height="42" rx="21" fill="#FFF0EB" stroke="#FFC4B2" stroke-width="2"/>
+    <text x="24" y="27" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="bold" fill="#EE4D2D">
       🔥 SIÊU HOÀN TIỀN SHOPEE SỐ 1 VN
     </text>
   </g>
 
-  <!-- Main Title -->
-  <text x="80" y="195" font-family="Arial, Helvetica, sans-serif" font-size="52" font-weight="900" fill="#1E293B">
+  <!-- Title -->
+  <text x="75" y="190" font-family="Arial, Helvetica, sans-serif" font-size="46" font-weight="900" fill="#1E293B">
     MUA SẮM THÔNG MINH
   </text>
 
   <!-- Highlight Badge 60% -->
-  <g transform="translate(80, 220)">
-    <rect width="520" height="64" rx="16" fill="#EE4D2D"/>
-    <text x="24" y="45" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="900" fill="#FFFFFF">
+  <g transform="translate(75, 215)">
+    <rect width="520" height="66" rx="18" fill="#EE4D2D"/>
+    <text x="22" y="46" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="900" fill="#FFFFFF">
       NHẬN LẠI 60% TIỀN HOA HỒNG
     </text>
   </g>
 
-  <!-- Subtitle -->
-  <text x="80" y="330" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="bold" fill="#64748B">
-    Dán link sản phẩm Shopee bất kỳ • Nhận tiền mặt về ví
+  <!-- Description -->
+  <text x="75" y="325" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="bold" fill="#64748B">
+    Dán link Shopee bất kỳ • Nhận tiền mặt về ví
   </text>
-  <text x="80" y="365" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="bold" fill="#64748B">
-    Rút tiền 24/7 về thẻ ngân hàng &amp; MoMo từ 50.000 VNĐ!
+  <text x="75" y="358" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="bold" fill="#64748B">
+    Rút tiền 24/7 về thẻ ngân hàng từ 50.000 VNĐ!
   </text>
 
-  <!-- Value Badges -->
-  <g transform="translate(80, 420)">
-    <rect width="160" height="46" rx="12" fill="#F1F5F9"/>
-    <text x="20" y="29" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="bold" fill="#334155">
+  <!-- 3 Trust Badges -->
+  <g transform="translate(75, 410)">
+    <rect width="145" height="44" rx="12" fill="#F1F5F9"/>
+    <text x="18" y="28" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="bold" fill="#334155">
       ✅ Uy Tín 100%
     </text>
   </g>
 
-  <g transform="translate(255, 420)">
-    <rect width="180" height="46" rx="12" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="1.5"/>
-    <text x="18" y="29" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="bold" fill="#059669">
-      💰 Hoàn Tiền Mặt
+  <g transform="translate(230, 410)">
+    <rect width="165" height="44" rx="12" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="1.5"/>
+    <text x="16" y="28" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="bold" fill="#059669">
+      💰 Hoàn 60% Tiền
     </text>
   </g>
 
-  <g transform="translate(450, 420)">
-    <rect width="180" height="46" rx="12" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1.5"/>
-    <text x="20" y="29" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="bold" fill="#2563EB">
+  <g transform="translate(405, 410)">
+    <rect width="170" height="44" rx="12" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1.5"/>
+    <text x="16" y="28" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="bold" fill="#2563EB">
       ⚡ Rút VietQR 24/7
     </text>
   </g>
 
-  <!-- RIGHT COLUMN: SHOPPING BAG + CASH FLOWING TO WALLET + GIRL ILLUSTRATION -->
-  <g transform="translate(730, 90)">
+  <g transform="translate(75, 480)">
+    <text x="0" y="20" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" fill="#94A3B8">
+      👉 https://shopee-cashback-agoz.onrender.com
+    </text>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- RIGHT HERO SCENE: 3D AI CHARACTER + SHOPEE BAG + FLYING MONEY INTO BAG -->
+  <!-- ========================================================================= -->
+
+  <!-- Glow behind scene -->
+  <circle cx="920" cy="340" r="220" fill="#FFD54F" fill-opacity="0.25" filter="url(#glowGold)"/>
+
+  <!-- 1. 3D AI CHARACTER (GIRL WITH OPEN MOUTH IN ASTONISHMENT) -->
+  <g id="character3D" transform="translate(710, 80)" filter="url(#characterShadow)">
     
-    <!-- Large Shopee Shopping Bag -->
-    <g transform="translate(80, 60)">
-      <!-- Bag Handle -->
-      <path d="M 60 50 Q 120 -30 180 50" stroke="#EE4D2D" stroke-width="16" fill="none" stroke-linecap="round"/>
-      <!-- Bag Body -->
-      <rect x="20" y="50" width="200" height="230" rx="28" fill="url(#shopeeOrange)" filter="url(#dropShadow)"/>
-      <!-- Shopee White S Logo in Bag -->
-      <circle cx="120" cy="155" r="45" fill="#FFFFFF"/>
-      <path d="M 105 155 C 105 142, 135 142, 135 130 C 135 120, 110 120, 105 132" stroke="#EE4D2D" stroke-width="9" fill="none" stroke-linecap="round"/>
-      <path d="M 135 155 C 135 168, 105 168, 105 180 C 105 190, 130 190, 135 178" stroke="#EE4D2D" stroke-width="9" fill="none" stroke-linecap="round"/>
+    <!-- Character Body / Clothes (Stylish White/Orange Hoodie) -->
+    <!-- Torso -->
+    <path d="M 90 260 C 50 280, 20 370, 15 480 L 255 480 C 250 370, 220 280, 180 260 Z" fill="url(#hoodieGrad)"/>
+    <!-- Orange Accent Collar -->
+    <path d="M 85 260 Q 135 300 185 260 Q 135 340 85 260 Z" fill="#EE4D2D"/>
+    <!-- Hoodie String -->
+    <path d="M 115 290 Q 110 340 105 380" stroke="#CBD5E1" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="105" cy="385" r="5" fill="#EE4D2D"/>
+    <path d="M 155 290 Q 160 340 165 380" stroke="#CBD5E1" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="165" cy="385" r="5" fill="#EE4D2D"/>
+
+    <!-- Left Arm holding Shopee Bag -->
+    <path d="M 45 280 C 10 340, 20 420, 70 450 C 90 440, 95 400, 75 350 Z" fill="url(#hoodieGrad)"/>
+    <!-- Hand holding bag -->
+    <circle cx="82" cy="425" r="22" fill="url(#skinGrad)"/>
+
+    <!-- Right Arm pointing excited to flying money -->
+    <path d="M 215 280 C 260 310, 310 300, 340 260 C 330 240, 290 250, 250 260 Z" fill="url(#hoodieGrad)"/>
+    <!-- Hand gesturing :O -->
+    <g transform="translate(340, 250)">
+      <circle cx="0" cy="0" r="20" fill="url(#skinGrad)"/>
+      <path d="M 5 -10 L 22 -20 L 26 -12 L 12 -4 Z" fill="url(#skinGrad)"/>
+      <path d="M 8 -2 L 28 -6 L 30 2 L 12 4 Z" fill="url(#skinGrad)"/>
     </g>
 
-    <!-- Cash Wallet / Pocket (Tiền chảy vào túi) -->
-    <g transform="translate(0, 240)">
-      <rect width="170" height="130" rx="20" fill="#1E293B" filter="url(#dropShadow)"/>
-      <rect x="10" y="20" width="150" height="100" rx="14" fill="#334155"/>
-      <circle cx="85" cy="70" r="18" fill="url(#goldGrad)"/>
-      <text x="79" y="77" font-family="Arial" font-size="20" font-weight="900" fill="#78350F">₫</text>
-      <!-- Cash bills sticking out -->
-      <rect x="25" y="-15" width="120" height="35" rx="6" fill="#10B981" transform="rotate(-6 25 -15)"/>
-      <text x="45" y="8" font-family="Arial" font-size="14" font-weight="bold" fill="#FFFFFF">500.000 đ</text>
+    <!-- Hair Back -->
+    <path d="M 40 130 C 20 220, 40 320, 70 360 C 90 320, 80 200, 80 140 Z" fill="url(#hairGrad)"/>
+    <path d="M 230 130 C 250 220, 230 320, 200 360 C 180 320, 190 200, 190 140 Z" fill="url(#hairGrad)"/>
+
+    <!-- Neck -->
+    <rect x="112" y="210" width="46" height="60" rx="20" fill="url(#skinGrad)"/>
+
+    <!-- 3D Head Base -->
+    <ellipse cx="135" cy="145" rx="72" ry="80" fill="url(#skinGrad)"/>
+
+    <!-- Cheeks (Blushing Pink in shock/joy) -->
+    <ellipse cx="85" cy="165" rx="18" ry="12" fill="#FF8A80" fill-opacity="0.5"/>
+    <ellipse cx="185" cy="165" rx="18" ry="12" fill="#FF8A80" fill-opacity="0.5"/>
+
+    <!-- BIG ASTONISHED EYES (Looking at money) -->
+    <!-- Left Eye -->
+    <g transform="translate(92, 125)">
+      <ellipse cx="0" cy="0" rx="17" ry="22" fill="#FFFFFF"/>
+      <ellipse cx="4" cy="-2" rx="11" ry="15" fill="#2E1B0E"/>
+      <circle cx="7" cy="-6" r="5" fill="#FFFFFF"/>
+      <circle cx="2" cy="4" r="2.5" fill="#FFFFFF"/>
+      <!-- Eyebrow raised in shock -->
+      <path d="M -16 -28 Q 0 -36 16 -24" stroke="#2D1506" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+      <!-- Eyelashes -->
+      <path d="M -10 -22 L -14 -28" stroke="#2D1506" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M 0 -24 L 0 -31" stroke="#2D1506" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M 10 -22 L 14 -28" stroke="#2D1506" stroke-width="2.5" stroke-linecap="round"/>
     </g>
 
-    <!-- Flying Gold Coins Stream from Shopee Bag into Wallet -->
-    <!-- Coin 1 -->
-    <g transform="translate(190, 180) rotate(-15)">
-      <circle cx="0" cy="0" r="26" fill="url(#goldGrad)" stroke="#F59E0B" stroke-width="3" filter="url(#glow)"/>
-      <text x="-9" y="8" font-family="Arial" font-size="24" font-weight="bold" fill="#78350F">₫</text>
+    <!-- Right Eye (Staring at the flying cash) -->
+    <g transform="translate(178, 125)">
+      <ellipse cx="0" cy="0" rx="17" ry="22" fill="#FFFFFF"/>
+      <ellipse cx="5" cy="-2" rx="11" ry="15" fill="#2E1B0E"/>
+      <circle cx="8" cy="-6" r="5" fill="#FFFFFF"/>
+      <circle cx="3" cy="4" r="2.5" fill="#FFFFFF"/>
+      <!-- Eyebrow raised high -->
+      <path d="M -16 -24 Q 0 -36 16 -28" stroke="#2D1506" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+      <!-- Eyelashes -->
+      <path d="M -10 -22 L -14 -28" stroke="#2D1506" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M 0 -24 L 0 -31" stroke="#2D1506" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M 10 -22 L 14 -28" stroke="#2D1506" stroke-width="2.5" stroke-linecap="round"/>
     </g>
 
-    <!-- Coin 2 -->
-    <g transform="translate(130, 230) rotate(12)">
-      <circle cx="0" cy="0" r="32" fill="url(#goldGrad)" stroke="#F59E0B" stroke-width="4" filter="url(#glow)"/>
-      <text x="-11" y="10" font-family="Arial" font-size="30" font-weight="bold" fill="#78350F">₫</text>
+    <!-- Cute Small Nose -->
+    <path d="M 135 142 Q 140 152 135 155" stroke="#D08865" stroke-width="3" stroke-linecap="round" fill="none"/>
+
+    <!-- WIDE OPEN MOUTH IN UTTER AMAZEMENT / GASPING (:O) -->
+    <g transform="translate(135, 185)">
+      <!-- Open Mouth Cavity -->
+      <ellipse cx="0" cy="5" rx="20" ry="25" fill="#7F1D1D"/>
+      <!-- Upper White Teeth -->
+      <path d="M -16 -6 Q 0 -2 16 -6 Q 0 4 -16 -6 Z" fill="#FFFFFF"/>
+      <!-- Tongue (Pink) -->
+      <ellipse cx="0" cy="18" rx="14" ry="10" fill="#F43F5E"/>
+      <!-- Mouth Outline Lips -->
+      <ellipse cx="0" cy="5" rx="20" ry="25" fill="none" stroke="#E11D48" stroke-width="3"/>
     </g>
 
-    <!-- Coin 3 -->
-    <g transform="translate(70, 210) rotate(-25)">
-      <circle cx="0" cy="0" r="22" fill="url(#goldGrad)" stroke="#F59E0B" stroke-width="3"/>
-      <text x="-8" y="7" font-family="Arial" font-size="20" font-weight="bold" fill="#78350F">₫</text>
-    </g>
-
-    <!-- Coin 4 -->
-    <g transform="translate(260, 280) rotate(30)">
-      <circle cx="0" cy="0" r="20" fill="url(#goldGrad)" stroke="#F59E0B" stroke-width="2.5"/>
-      <text x="-7" y="6" font-family="Arial" font-size="18" font-weight="bold" fill="#78350F">₫</text>
-    </g>
-
-    <!-- Floating 60% Cashback Star Badge -->
-    <g transform="translate(240, 70)">
-      <circle cx="45" cy="45" r="45" fill="#FEF08A" stroke="#F59E0B" stroke-width="4" filter="url(#glow)"/>
-      <text x="18" y="42" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="900" fill="#B45309">HOÀN</text>
-      <text x="18" y="66" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="900" fill="#DC2626">60%</text>
-    </g>
+    <!-- Hair Front / Bangs & Highlights -->
+    <path d="M 60 110 C 60 40, 210 40, 210 110 C 210 80, 180 60, 135 60 C 90 60, 60 80, 60 110 Z" fill="url(#hairGrad)"/>
+    <!-- Bangs -->
+    <path d="M 70 95 C 90 120, 110 120, 135 105 C 160 120, 180 120, 200 95 C 180 70, 90 70, 70 95 Z" fill="url(#hairGrad)"/>
+    <!-- Highlight Gloss on Hair -->
+    <path d="M 90 65 Q 135 50 180 65" stroke="#A77247" stroke-width="6" stroke-linecap="round" fill="none"/>
 
   </g>
+
+  <!-- 2. ICONIC SHOPEE SHOPPING BAG (TÚI XÁCH SHOPEE) -->
+  <g id="shopeeBag" transform="translate(730, 310)" filter="url(#characterShadow)">
+    <!-- Bag Shadow -->
+    <ellipse cx="120" cy="270" rx="110" ry="20" fill="#000000" fill-opacity="0.3"/>
+
+    <!-- White Curved Handles -->
+    <path d="M 70 50 C 70 -30, 170 -30, 170 50" stroke="#FFFFFF" stroke-width="16" fill="none" stroke-linecap="round" filter="url(#glowGold)"/>
+    <path d="M 70 50 C 70 -30, 170 -30, 170 50" stroke="#F1F5F9" stroke-width="12" fill="none" stroke-linecap="round"/>
+
+    <!-- Bag Body 3D -->
+    <path d="M 30 50 L 210 50 L 230 250 L 10 250 Z" fill="url(#bagFront)"/>
+    <!-- Left 3D Fold -->
+    <path d="M 30 50 L 10 250 L 0 240 L 15 45 Z" fill="url(#bagSide)"/>
+
+    <!-- Top Rim Highlight -->
+    <path d="M 15 45 L 215 45 L 210 55 L 30 55 Z" fill="#FFA085"/>
+
+    <!-- Iconic Shopee White Bag & "S" Logo -->
+    <g transform="translate(120, 150)">
+      <!-- Shopee White Bag Icon -->
+      <rect x="-42" y="-40" width="84" height="80" rx="16" fill="#FFFFFF"/>
+      <path d="M -22 -40 C -22 -60, 22 -60, 22 -40" stroke="#FFFFFF" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <!-- S Letter in Orange -->
+      <path d="M 14 -18 C 14 -30, -14 -22, -14 -8 C -14 10, 14 6, 14 20 C 14 34, -14 26, -14 16" stroke="#EE4D2D" stroke-width="8" stroke-linecap="round" fill="none"/>
+    </g>
+
+    <!-- Glowing 60% Tag hanging from bag -->
+    <g transform="translate(185, 90) rotate(18)">
+      <rect width="65" height="40" rx="8" fill="#FEE2E2" stroke="#EF4444" stroke-width="2.5"/>
+      <text x="8" y="27" font-family="Arial" font-size="18" font-weight="900" fill="#DC2626">-60%</text>
+    </g>
+  </g>
+
+  <!-- 3. MONEY CASH & GOLD COINS MAGICALLY FLYING INTO THE SHOPEE BAG -->
+  <g id="flyingCashStream" filter="url(#moneyGlow)">
+    
+    <!-- Motion Trail lines -->
+    <path d="M 1150 160 Q 980 220 860 360" stroke="#FDE047" stroke-width="5" stroke-dasharray="10 8" fill="none" opacity="0.8"/>
+    <path d="M 1100 240 Q 950 300 840 390" stroke="#38BDF8" stroke-width="4" stroke-dasharray="8 6" fill="none" opacity="0.7"/>
+
+    <!-- Banknote 1: VNĐ 500.000₫ (Blue-Cyan) swooping in -->
+    <g transform="translate(1010, 140) rotate(-22)">
+      <rect width="130" height="68" rx="8" fill="url(#vnd500Grad)" stroke="#E0F2FE" stroke-width="2"/>
+      <rect x="8" y="8" width="114" height="52" rx="4" fill="none" stroke="#BAE6FD" stroke-width="1.5" stroke-dasharray="4 2"/>
+      <!-- Watermark / Vietnam Emblem -->
+      <circle cx="34" cy="34" r="16" fill="#BAE6FD" fill-opacity="0.3"/>
+      <text x="56" y="32" font-family="Arial" font-size="15" font-weight="900" fill="#FFFFFF">500.000</text>
+      <text x="64" y="50" font-family="Arial" font-size="11" font-weight="bold" fill="#E0F2FE">VIỆT NAM</text>
+    </g>
+
+    <!-- Banknote 2: VNĐ 500.000₫ diving right into bag mouth -->
+    <g transform="translate(860, 240) rotate(28)">
+      <rect width="120" height="62" rx="8" fill="url(#vnd500Grad)" stroke="#E0F2FE" stroke-width="2"/>
+      <rect x="6" y="6" width="108" height="50" rx="4" fill="none" stroke="#BAE6FD" stroke-width="1.5"/>
+      <circle cx="30" cy="31" r="14" fill="#BAE6FD" fill-opacity="0.3"/>
+      <text x="50" y="30" font-family="Arial" font-size="14" font-weight="900" fill="#FFFFFF">500.000₫</text>
+      <text x="58" y="46" font-family="Arial" font-size="10" font-weight="bold" fill="#E0F2FE">VIỆT NAM</text>
+    </g>
+
+    <!-- Banknote 3: VNĐ 200.000₫ (Red-Pink) -->
+    <g transform="translate(960, 290) rotate(-12)">
+      <rect width="115" height="58" rx="8" fill="url(#vnd200Grad)" stroke="#FFE4E6" stroke-width="2"/>
+      <rect x="6" y="6" width="103" height="46" rx="4" fill="none" stroke="#FECDD3" stroke-width="1.5"/>
+      <circle cx="28" cy="29" r="13" fill="#FECDD3" fill-opacity="0.3"/>
+      <text x="46" y="28" font-family="Arial" font-size="14" font-weight="900" fill="#FFFFFF">200.000₫</text>
+      <text x="52" y="44" font-family="Arial" font-size="10" font-weight="bold" fill="#FFE4E6">VIỆT NAM</text>
+    </g>
+
+    <!-- Banknote 4: Entering inside Shopee Bag -->
+    <g transform="translate(790, 310) rotate(-35)">
+      <rect width="100" height="52" rx="6" fill="url(#vnd500Grad)" stroke="#E0F2FE" stroke-width="2"/>
+      <text x="25" y="32" font-family="Arial" font-size="13" font-weight="900" fill="#FFFFFF">500.000₫</text>
+    </g>
+
+    <!-- SHINY 3D GOLD COINS FLYING & GLOWING -->
+    <!-- Gold Coin 1 -->
+    <g transform="translate(1080, 230)" filter="url(#glowGold)">
+      <circle cx="0" cy="0" r="28" fill="url(#goldGrad)" stroke="#B45309" stroke-width="3"/>
+      <circle cx="0" cy="0" r="22" fill="none" stroke="#FDE68A" stroke-width="2"/>
+      <text x="-9" y="9" font-family="Arial" font-size="26" font-weight="900" fill="#78350F">₫</text>
+    </g>
+
+    <!-- Gold Coin 2 -->
+    <g transform="translate(930, 200)" filter="url(#glowGold)">
+      <circle cx="0" cy="0" r="32" fill="url(#goldGrad)" stroke="#B45309" stroke-width="3.5"/>
+      <circle cx="0" cy="0" r="25" fill="none" stroke="#FDE68A" stroke-width="2"/>
+      <text x="-10" y="10" font-family="Arial" font-size="30" font-weight="900" fill="#78350F">₫</text>
+    </g>
+
+    <!-- Gold Coin 3 -->
+    <g transform="translate(850, 310)" filter="url(#glowGold)">
+      <circle cx="0" cy="0" r="24" fill="url(#goldGrad)" stroke="#B45309" stroke-width="2.5"/>
+      <circle cx="0" cy="0" r="18" fill="none" stroke="#FDE68A" stroke-width="1.5"/>
+      <text x="-8" y="8" font-family="Arial" font-size="22" font-weight="900" fill="#78350F">₫</text>
+    </g>
+
+    <!-- Gold Coin 4 -->
+    <g transform="translate(1020, 370)">
+      <circle cx="0" cy="0" r="22" fill="url(#goldGrad)" stroke="#B45309" stroke-width="2.5"/>
+      <text x="-7" y="7" font-family="Arial" font-size="20" font-weight="900" fill="#78350F">₫</text>
+    </g>
+
+    <!-- Gold Coin 5 -->
+    <g transform="translate(780, 280)">
+      <circle cx="0" cy="0" r="18" fill="url(#goldGrad)" stroke="#B45309" stroke-width="2"/>
+      <text x="-6" y="6" font-family="Arial" font-size="16" font-weight="900" fill="#78350F">₫</text>
+    </g>
+
+    <!-- Mega 60% Cashback Starburst Badge (Top Right) -->
+    <g transform="translate(1080, 80)" filter="url(#glowGold)">
+      <circle cx="0" cy="0" r="50" fill="#FEF08A" stroke="#F59E0B" stroke-width="5"/>
+      <text x="-32" y="-6" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="900" fill="#B45309">HOÀN</text>
+      <text x="-32" y="24" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="900" fill="#DC2626">60%</text>
+    </g>
+  </g>
+
 </svg>
