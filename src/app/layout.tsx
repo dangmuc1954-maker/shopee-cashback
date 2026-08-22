@@ -8,7 +8,7 @@ import { Toaster } from 'sonner';
 const inter = Inter({ subsets: ['latin', 'vietnamese'] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://muaxamthongminh.up.railway.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://shopee-cashback-agoz.onrender.com'),
   title: 'Mua Sắm Thông Minh - Hoàn 60% Hoa Hồng Shopee Tự Động',
   description:
     'Công cụ hoàn tiền Shopee số 1 Việt Nam! Dán link sản phẩm bất kỳ để nhận lại 60% tiền hoa hồng mặt. Rút tiền nhanh 24/7 về thẻ ngân hàng từ 50.000 VNĐ.',
@@ -25,6 +25,7 @@ export const metadata: Metadata = {
     title: 'Mua Sắm Thông Minh - Hoàn 60% Tiền Hoa Hồng Shopee',
     description:
       'Dán link sản phẩm Shopee bất kỳ để nhận lại 60% tiền hoa hồng mặt. Rút tiền nhanh 24/7 về mọi ngân hàng từ 50k!',
+    url: 'https://shopee-cashback-agoz.onrender.com',
     siteName: 'Mua Sắm Thông Minh',
     images: [
       {
