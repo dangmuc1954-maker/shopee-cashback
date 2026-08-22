@@ -26,6 +26,14 @@ export const metadata: Metadata = {
     description:
       'Dán link sản phẩm Shopee bất kỳ để nhận lại 60% tiền hoa hồng mặt. Rút tiền nhanh 24/7 về mọi ngân hàng từ 50k!',
     siteName: 'Mua Sắm Thông Minh',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Mua Sắm Thông Minh - Hoàn 60% Tiền Hoa Hồng Shopee',
+      },
+    ],
     locale: 'vi_VN',
     type: 'website',
   },
@@ -33,6 +41,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Mua Sắm Thông Minh - Hoàn 60% Tiền Hoa Hồng Shopee',
     description: 'Nhận lại 60% tiền hoa hồng khi mua sắm Shopee. Rút tiền mặt nhanh 24/7 từ 50k!',
+    images: ['/og-image.png'],
   },
   robots: {
     index: true,
