@@ -112,59 +112,63 @@
 
   <!-- LEFT COLUMN CONTENT -->
   <!-- Top Badge -->
-  <g transform="translate(75, 80)">
-    <rect width="330" height="42" rx="21" fill="#FFF0EB" stroke="#FFC4B2" stroke-width="2"/>
-    <text x="24" y="27" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="bold" fill="#EE4D2D">
-      🔥 SIÊU HOÀN TIỀN SHOPEE SỐ 1 VN
+  <g transform="translate(75, 75)">
+    <rect width="360" height="42" rx="21" fill="#FFF1ED" stroke="#FF8A65" stroke-width="2"/>
+    <text x="24" y="27" font-family="'Segoe UI', Arial, sans-serif" font-size="15" font-weight="800" fill="#EE4D2D" letter-spacing="0.5">
+      🔥 CÔNG CỤ HOÀN TIỀN SHOPEE SỐ 1
     </text>
   </g>
 
-  <!-- Title -->
-  <text x="75" y="190" font-family="Arial, Helvetica, sans-serif" font-size="46" font-weight="900" fill="#1E293B">
-    MUA SẮM THÔNG MINH
-  </text>
+  <!-- Title: MUA SẮM THÔNG MINH (Font Segoe UI Siêu Nét) -->
+  <g transform="translate(75, 175)">
+    <text x="0" y="0" font-family="'Segoe UI', Arial, sans-serif" font-size="48" font-weight="900" fill="#0F172A" letter-spacing="-0.5">
+      MUA SẮM <tspan fill="#EE4D2D">THÔNG MINH</tspan>
+    </text>
+  </g>
 
   <!-- Highlight Badge 60% -->
-  <g transform="translate(75, 215)">
-    <rect width="520" height="66" rx="18" fill="#EE4D2D"/>
-    <text x="22" y="46" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="900" fill="#FFFFFF">
+  <g transform="translate(75, 205)">
+    <rect width="520" height="68" rx="20" fill="#EE4D2D" filter="url(#dropShadow)"/>
+    <text x="26" y="47" font-family="'Segoe UI', Arial, sans-serif" font-size="32" font-weight="900" fill="#FFFFFF" letter-spacing="0.5">
       NHẬN LẠI 60% TIỀN HOA HỒNG
     </text>
   </g>
 
-  <!-- Description -->
-  <text x="75" y="325" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="bold" fill="#64748B">
-    Dán link Shopee bất kỳ • Nhận tiền mặt về ví
-  </text>
-  <text x="75" y="358" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="bold" fill="#64748B">
-    Rút tiền 24/7 về thẻ ngân hàng từ 50.000 VNĐ!
-  </text>
+  <!-- Description (Dễ đọc, rõ ràng) -->
+  <g transform="translate(75, 315)">
+    <text x="0" y="0" font-family="'Segoe UI', Arial, sans-serif" font-size="19" font-weight="700" fill="#334155">
+      Dán link Shopee bất kỳ • Nhận tiền mặt về ví
+    </text>
+    <text x="0" y="32" font-family="'Segoe UI', Arial, sans-serif" font-size="19" font-weight="700" fill="#64748B">
+      Rút tiền 24/7 về thẻ ngân hàng từ 50.000 VNĐ!
+    </text>
+  </g>
 
   <!-- 3 Trust Badges -->
-  <g transform="translate(75, 410)">
-    <rect width="145" height="44" rx="12" fill="#F1F5F9"/>
-    <text x="18" y="28" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="bold" fill="#334155">
+  <g transform="translate(75, 400)">
+    <rect width="145" height="46" rx="14" fill="#F1F5F9" stroke="#E2E8F0" stroke-width="1.5"/>
+    <text x="18" y="29" font-family="'Segoe UI', Arial, sans-serif" font-size="15" font-weight="800" fill="#1E293B">
       ✅ Uy Tín 100%
     </text>
   </g>
 
-  <g transform="translate(230, 410)">
-    <rect width="165" height="44" rx="12" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="1.5"/>
-    <text x="16" y="28" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="bold" fill="#059669">
+  <g transform="translate(230, 400)">
+    <rect width="165" height="46" rx="14" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="1.5"/>
+    <text x="16" y="29" font-family="'Segoe UI', Arial, sans-serif" font-size="15" font-weight="800" fill="#059669">
       💰 Hoàn 60% Tiền
     </text>
   </g>
 
-  <g transform="translate(405, 410)">
-    <rect width="170" height="44" rx="12" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1.5"/>
-    <text x="16" y="28" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="bold" fill="#2563EB">
+  <g transform="translate(405, 400)">
+    <rect width="170" height="46" rx="14" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1.5"/>
+    <text x="16" y="29" font-family="'Segoe UI', Arial, sans-serif" font-size="15" font-weight="800" fill="#2563EB">
       ⚡ Rút VietQR 24/7
     </text>
   </g>
 
   <g transform="translate(75, 480)">
-    <text x="0" y="20" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" fill="#94A3B8">
-      👉 https://shopee-cashback-agoz.onrender.com
+    <text x="0" y="15" font-family="'Segoe UI', Arial, sans-serif" font-size="15" font-weight="700" fill="#94A3B8">
+      🌐 shopee-cashback-agoz.onrender.com
     </text>
   </g>
 
