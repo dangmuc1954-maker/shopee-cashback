@@ -8,13 +8,14 @@ import { Toaster } from 'sonner';
 const inter = Inter({ subsets: ['latin', 'vietnamese'] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://shopee-cashback-agoz.onrender.com'),
+  metadataBase: new URL('https://shopeecashback.online'),
   title: 'Mua Sắm Thông Minh - Hoàn Tiền Nhanh Chóng',
   description:
     'Công cụ hoàn tiền Shopee số 1 Việt Nam! Dán link sản phẩm bất kỳ để nhận lại 60% tiền hoa hồng mặt. Rút tiền nhanh 24/7 về thẻ ngân hàng từ 50.000 VNĐ.',
   keywords: [
     'hoàn tiền shopee',
     'shopee cashback',
+    'shopeecashback.online',
     'mua sắm thông minh',
     'shopee affiliate',
     'rút tiền shopee',
@@ -25,20 +26,20 @@ export const metadata: Metadata = {
     title: 'Mua Sắm Thông Minh - Hoàn Tiền Nhanh Chóng',
     description:
       'Dán link sản phẩm Shopee bất kỳ để nhận lại 60% tiền hoa hồng mặt. Rút tiền nhanh 24/7 về mọi ngân hàng từ 50k!',
-    url: 'https://shopee-cashback-agoz.onrender.com',
-    siteName: 'Mua Sắm Thông Minh',
+    url: 'https://shopeecashback.online',
+    siteName: 'Shopee Cashback Online',
     images: [
       {
-        url: 'https://shopee-cashback-agoz.onrender.com/og-image.jpg',
-        secureUrl: 'https://shopee-cashback-agoz.onrender.com/og-image.jpg',
+        url: 'https://shopeecashback.online/og-image.jpg',
+        secureUrl: 'https://shopeecashback.online/og-image.jpg',
         width: 1200,
         height: 630,
         type: 'image/jpeg',
         alt: 'Mua Sắm Thông Minh - Hoàn Tiền Nhanh Chóng',
       },
       {
-        url: 'https://shopee-cashback-agoz.onrender.com/og-image.png',
-        secureUrl: 'https://shopee-cashback-agoz.onrender.com/og-image.png',
+        url: 'https://shopeecashback.online/og-image.png',
+        secureUrl: 'https://shopeecashback.online/og-image.png',
         width: 1200,
         height: 630,
         type: 'image/png',
@@ -52,7 +53,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Mua Sắm Thông Minh - Hoàn Tiền Nhanh Chóng',
     description: 'Nhận lại 60% tiền hoa hồng khi mua sắm Shopee. Rút tiền mặt nhanh 24/7 từ 50k!',
-    images: ['https://shopee-cashback-agoz.onrender.com/og-image.jpg'],
+    images: ['https://shopeecashback.online/og-image.jpg'],
   },
   robots: {
     index: true,
