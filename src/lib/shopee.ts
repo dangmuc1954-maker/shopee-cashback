@@ -36,10 +36,11 @@ export function cleanShopeeUrl(url: string): string {
 }
 
 export function generateSubId(userId: string): string {
-  // Tạo sub_id định danh duy nhất ngắn gọn không chứa ký tự đặc biệt
-  const cleanUserId = userId.replace(/[^a-zA-Z0-9]/g, '').slice(0, 8);
-  const randomSuffix = Math.random().toString(36).substring(2, 6);
-  return `${cleanUserId}${randomSuffix}`;
+  // Tạo sub_id định danh duy nhất tuyệt đối kèm timestamp
+  const cleanUserId = userId.replace(/[^a-zA-Z0-9]/g, '').slice(0, 6).toUpperCase();
+  const timestampHex = Date.now().toString(36).toUpperCase();
+  const randomSuffix = Math.random().toString(36).substring(2, 5).toUpperCase();
+  return `${cleanUserId}${timestampHex}${randomSuffix}`;
 }
 
 export interface ConvertLinkResult {
