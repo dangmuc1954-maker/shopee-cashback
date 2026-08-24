@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth';
-import { isValidShopeeUrl, convertToAffiliateUrl, generateSubId, cleanShopeeUrl } from '@/lib/shopee';
+import { isValidShopeeUrl, convertToAffiliateUrl, generateSubId, resolveShopeeShortLink } from '@/lib/shopee';
 import { generateShopeeApiShortLink } from '@/lib/shopee-api';
 
 export async function POST(req: Request) {
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 
     if (!isValidShopeeUrl(url)) {
       return NextResponse.json(
-        { success: false, message: 'Đường link không hợp lệ! Vui lòng nhập link từ shopee.vn, s.shopee.vn hoặc shope.ee' },
+        { success: false, message: 'Đường link không hợp lệ! Vui lòng nhập link từ shopee.vn, s.shopee.vn, shope.ee hoặc vn.shp.ee' },
         { status: 400 }
       );
     }
@@ -32,7 +32,9 @@ export async function POST(req: Request) {
     const shopeeAffId = settings?.shopeeAffId || '17352020564';
     const userIdentifier = user ? user.id : 'GUEST';
     const subId = generateSubId(userIdentifier);
-    const cleanOriginalUrl = cleanShopeeUrl(url);
+    
+    // Tự động giải mã link rút gọn thành link sản phẩm gốc
+    const cleanOriginalUrl = await resolveShopeeShortLink(url);
 
     let affiliateUrl = '';
 

@@ -35,6 +35,42 @@ export function cleanShopeeUrl(url: string): string {
   }
 }
 
+// Tự động giải mã link rút gọn (s.shopee.vn, shope.ee, vn.shp.ee) thành link sản phẩm gốc
+export async function resolveShopeeShortLink(url: string): Promise<string> {
+  try {
+    let clean = url.trim();
+    if (!clean.startsWith('http://') && !clean.startsWith('https://')) {
+      clean = 'https://' + clean;
+    }
+    const parsed = new URL(clean);
+    
+    // Nếu là dạng link rút gọn
+    if (parsed.hostname.startsWith('s.') || parsed.hostname.includes('shope.ee') || parsed.hostname.includes('shp.ee')) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 3500);
+      try {
+        const res = await fetch(clean, {
+          method: 'GET',
+          redirect: 'follow',
+          signal: controller.signal,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          },
+        });
+        clearTimeout(timeout);
+        if (res.url && res.url !== clean) {
+          return cleanShopeeUrl(res.url);
+        }
+      } catch (fetchErr) {
+        clearTimeout(timeout);
+      }
+    }
+    return cleanShopeeUrl(clean);
+  } catch (err) {
+    return cleanShopeeUrl(url);
+  }
+}
+
 export function generateSubId(userId: string): string {
   // Tạo sub_id định danh duy nhất tuyệt đối kèm timestamp
   const cleanUserId = userId.replace(/[^a-zA-Z0-9]/g, '').slice(0, 6).toUpperCase();
