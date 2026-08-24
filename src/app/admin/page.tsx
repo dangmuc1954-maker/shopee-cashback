@@ -100,6 +100,7 @@ export default function AdminDashboardPage() {
 
   // Backup / Restore state
   const [restoringBackup, setRestoringBackup] = useState(false);
+  const [syncingShopee, setSyncingShopee] = useState(false);
 
   useEffect(() => {
     loadAllAdminData();
@@ -289,6 +290,28 @@ export default function AdminDashboardPage() {
       toast.error('Lỗi kết nối máy chủ!');
     } finally {
       setAddingOrder(false);
+    }
+  };
+
+  // Handle Sync Orders from Shopee Open API
+  const handleSyncShopee = async () => {
+    setSyncingShopee(true);
+    try {
+      const res = await fetch('/api/admin/sync-shopee', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(data.message);
+        loadAllAdminData();
+      } else {
+        toast.error(data.message || 'Lỗi đồng bộ');
+        if (!settings.shopeeAppId || !settings.shopeeAppSecret) {
+          setActiveTab('settings');
+        }
+      }
+    } catch (err) {
+      toast.error('Lỗi kết nối máy chủ!');
+    } finally {
+      setSyncingShopee(false);
     }
   };
 
@@ -720,6 +743,15 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2.5">
+                  <button
+                    onClick={handleSyncShopee}
+                    disabled={syncingShopee}
+                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold shadow-md transition-colors"
+                  >
+                    <RefreshCw className={`w-4 h-4 ${syncingShopee ? 'animate-spin' : ''}`} />
+                    <span>{syncingShopee ? 'Đang đồng bộ...' : '⚡ Đồng Bộ Đơn Shopee (API)'}</span>
+                  </button>
+
                   <button
                     onClick={() => setShowAddOrderModal(true)}
                     className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-shopee-500 hover:bg-shopee-600 text-white text-xs font-bold shadow-md transition-colors"
@@ -1432,6 +1464,56 @@ export default function AdminDashboardPage() {
                     />
                     <p className="text-[11px] text-slate-400 mt-1">
                       ID này sẽ được tự động gắn vào mọi link sản phẩm khi khách hàng tạo link tiếp thị qua cổng <code>s.shopee.vn/an_redir</code>.
+                    </p>
+                  </div>
+
+                  {/* Cấu Hình Shopee Open API Kết Nối Tự Động */}
+                  <div className="p-4 rounded-2xl bg-orange-50/60 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900/50 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xs font-bold text-orange-900 dark:text-orange-300 uppercase tracking-wider flex items-center gap-1.5">
+                        <RefreshCw className="w-3.5 h-3.5" />
+                        <span>Kết Nối Shopee Open API (Tự Động Kéo Đơn Hàng)</span>
+                      </h4>
+                      <a
+                        href="https://affiliate.shopee.vn/open_api/list"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[11px] font-bold text-orange-600 hover:underline flex items-center gap-0.5"
+                      >
+                        <span>Lấy mã tại Shopee</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                          Shopee App ID (App Key):
+                        </label>
+                        <input
+                          type="text"
+                          value={settings.shopeeAppId || ''}
+                          onChange={(e) => setSettings({ ...settings, shopeeAppId: e.target.value })}
+                          placeholder="Ví dụ: 17352020564..."
+                          className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-mono text-xs focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                          Shopee Secret Key:
+                        </label>
+                        <input
+                          type="password"
+                          value={settings.shopeeAppSecret || ''}
+                          onChange={(e) => setSettings({ ...settings, shopeeAppSecret: e.target.value })}
+                          placeholder="Nhập Secret Key từ Shopee..."
+                          className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-mono text-xs focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                        />
+                      </div>
+                    </div>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      💡 Khi điền App ID &amp; Secret Key, bạn có thể bấm nút <strong>"⚡ Đồng Bộ Đơn Shopee"</strong> để hệ thống tự động kéo mọi đơn hàng và cộng tiền hoàn cho khách mà không cần làm gì!
                     </p>
                   </div>
 
