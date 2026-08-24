@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
   ShieldCheck, 
@@ -32,7 +33,8 @@ import {
   LayoutDashboard,
   Clock,
   Database,
-  ArrowUpRight
+  ArrowUpRight,
+  Film
 } from 'lucide-react';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
