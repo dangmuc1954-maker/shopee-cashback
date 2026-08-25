@@ -235,13 +235,13 @@ export default function VideoStudioPage() {
             <div className="space-y-1.5">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-xs font-bold">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>Google Veo 3 &amp; Lite 0-Credit Studio</span>
+                <span>Google Veo 3 &amp; Marketing Studio</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2.5">
-                Xưởng Tạo Video Timelapse Xây Nhà AI
+                Xưởng Tạo Video AI &amp; Marketing Cashback
               </h1>
               <p className="text-xs sm:text-sm text-slate-400 max-w-2xl leading-relaxed">
-                Tạo chuỗi phân cảnh <strong>8 giây đồng nhất 100%</strong> từ móng đến khi hoàn thiện nhà, sau đó <strong>tự động ghép thành 1 video hoàn chỉnh</strong> cực kỳ mượt mà để đăng TikTok / Reels / Shorts!
+                Tạo chuỗi phân cảnh <strong>Timelapse Xây Nhà 8s</strong> đồng nhất, hoặc <strong>Tải video Marketing Hướng Dẫn Hoàn Tiền 60%</strong> để đăng TikTok / Reels kéo khách!
               </p>
             </div>
 
@@ -256,12 +256,97 @@ export default function VideoStudioPage() {
           </div>
         </div>
 
-        {/* 2. CẤU HÌNH KIẾN TRÚC & PHONG CÁCH */}
+        {/* 1.5. VIDEO MARKETING HOÀN TIỀN 60% (SẴN SÀNG TẢI & CHỈNH SỬA) */}
+        <div className="bg-gradient-to-br from-amber-950/30 via-slate-900 to-slate-900 border border-amber-500/30 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+                <Film className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
+                  🔥 Video Marketing Hướng Dẫn Hoàn Tiền 60% Shopee
+                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">
+                    Đã Render Xong (54s)
+                  </span>
+                </h2>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Chuẩn kích thước 9:16 dọc (1080x1920 Full HD), giọng đọc AI tiếng Việt lôi cuốn, 7 phân cảnh đánh trúng tâm lý người mua!
+                </p>
+              </div>
+            </div>
+
+            <a
+              href="/shopee_cashback_marketing_video.mp4"
+              download="shopee_cashback_marketing_video.mp4"
+              className="px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-bold text-xs shadow-lg shadow-orange-500/20 transition-all flex items-center justify-center gap-2 shrink-0"
+            >
+              <Download className="w-4 h-4" />
+              <span>📥 Tải Video Về Máy (.MP4)</span>
+            </a>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+            {/* Player Preview */}
+            <div className="lg:col-span-5 max-w-xs mx-auto w-full aspect-[9/16] rounded-2xl overflow-hidden border-2 border-slate-700 bg-black shadow-2xl">
+              <video
+                src="/shopee_cashback_marketing_video.mp4"
+                controls
+                className="w-full h-full object-contain"
+              />
+            </div>
+
+            {/* Thông tin kịch bản & Hướng dẫn fix nhẹ */}
+            <div className="lg:col-span-7 space-y-4">
+              <div className="p-4 rounded-2xl bg-slate-800/60 border border-slate-700/80 space-y-2.5">
+                <div className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4" />
+                  <span>Cấu trúc 7 phân cảnh tâm lý trong video:</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-slate-300">
+                  <div className="p-2 rounded-lg bg-slate-900/60 border border-slate-800">
+                    <strong className="text-rose-400">#1 Hook (0-9s):</strong> Cảnh báo mất tiền oan khi mua Shopee.
+                  </div>
+                  <div className="p-2 rounded-lg bg-slate-900/60 border border-slate-800">
+                    <strong className="text-amber-400">#2 So Sánh (9-20s):</strong> Người thường 0đ vs Dân Pro nhận 60%.
+                  </div>
+                  <div className="p-2 rounded-lg bg-slate-900/60 border border-slate-800">
+                    <strong className="text-indigo-400">#3 Bước 1 (20-28s):</strong> Copy link sản phẩm Shopee.
+                  </div>
+                  <div className="p-2 rounded-lg bg-slate-900/60 border border-slate-800">
+                    <strong className="text-orange-400">#4 Bước 2 (28-35s):</strong> Dán link vào shopeecashback.online.
+                  </div>
+                  <div className="p-2 rounded-lg bg-slate-900/60 border border-slate-800">
+                    <strong className="text-emerald-400">#5 Bước 3 (35-40s):</strong> Đặt hàng Shopee như bình thường.
+                  </div>
+                  <div className="p-2 rounded-lg bg-slate-900/60 border border-slate-800">
+                    <strong className="text-green-400">#6 Ting Ting (40-47s):</strong> Tiền hoa hồng về ví + Rút VietQR 24/7.
+                  </div>
+                  <div className="p-2 rounded-lg bg-slate-900/60 border border-slate-800 sm:col-span-2">
+                    <strong className="text-yellow-400">#7 CTA (47-54s):</strong> Kêu gọi truy cập shopeecashback.online nhận hoàn tiền ngay!
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-indigo-950/40 border border-indigo-500/30 text-xs text-slate-300 space-y-1.5">
+                <div className="font-bold text-indigo-300 flex items-center gap-1.5">
+                  <Info className="w-4 h-4" />
+                  <span>Mẹo chỉnh sửa nhanh trong CapCut (nếu muốn):</span>
+                </div>
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  Video đã có sẵn giọng đọc AI và khung hình chuẩn. Anh chỉ cần nạp vào CapCut chèn thêm 1 bản nhạc beat TikTok vui nhộn (âm lượng 15-20%) hoặc thêm hiệu ứng sticker bàn tay chỉ vào link là có thể đăng kéo triệu view ngay!
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 2. CẤU HÌNH KIẾN TRÚC & PHONG CÁCH TIMELAPSE */}
         <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-6">
           <div className="flex items-center gap-2.5 pb-4 border-b border-slate-800">
             <Sliders className="w-5 h-5 text-indigo-400" />
             <h2 className="text-base font-bold text-white">
-              Bước 1: Chọn Kiểu Nhà &amp; Bối Cảnh Cần Xây
+              Tạo Video Timelapse Xây Nhà AI (Phân Cảnh 8 Giây)
             </h2>
           </div>
 
