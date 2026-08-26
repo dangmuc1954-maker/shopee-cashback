@@ -24,10 +24,15 @@ export async function POST(req: Request) {
 
     const user = await getCurrentUser();
 
-    // Lấy cài đặt hệ thống (Shopee Affiliate ID của Admin)
-    const settings = await prisma.systemSetting.findUnique({
-      where: { id: 'DEFAULT' },
-    });
+    // Lấy cài đặt hệ thống (Shopee Affiliate ID của Admin) với cơ chế fallback an toàn
+    let settings = null;
+    try {
+      settings = await prisma.systemSetting.findUnique({
+        where: { id: 'DEFAULT' },
+      });
+    } catch (dbErr) {
+      console.warn('Không thể đọc settings từ DB, sử dụng giá trị mặc định:', dbErr);
+    }
 
     const shopeeAffId = settings?.shopeeAffId || '17352020564';
     const userIdentifier = user ? user.id : 'GUEST';
