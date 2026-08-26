@@ -232,12 +232,18 @@ export default function HomePage() {
                     </div>
                   </div>
 
-                  {/* Warning / Tips */}
-                  <div className="flex items-start gap-2 text-xs text-slate-500 dark:text-slate-400 bg-amber-50/60 dark:bg-amber-950/20 p-3 rounded-xl border border-amber-200/60 dark:border-amber-900/30">
-                    <Info className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                    <p>
-                      <strong>Lưu ý:</strong> Hãy bấm vào link và thêm sản phẩm vào giỏ để thanh toán trong vòng 24 giờ. Đơn hàng hoàn tất sẽ tự động được hệ thống đối soát và cộng <strong>60% hoa hồng</strong> vào ví của bạn.
-                    </p>
+                  {/* Tips Mua Hàng Chuẩn Không Bị Mất Đơn */}
+                  <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-slate-800/80 dark:to-slate-800/40 p-4 rounded-2xl border border-amber-200 dark:border-slate-700 space-y-2 text-xs">
+                    <div className="flex items-center gap-2 font-bold text-amber-900 dark:text-amber-300">
+                      <Sparkles className="w-4 h-4 text-amber-600" />
+                      <span>4 Nguyên Tắc Vàng Để Shopee Ghi Nhận Hoa Hồng 100%:</span>
+                    </div>
+                    <ul className="space-y-1 text-slate-700 dark:text-slate-300 list-disc list-inside">
+                      <li><strong>Giỏ hàng phải trống:</strong> Xóa sản phẩm khỏi giỏ trước khi bấm link để Shopee không ghi nhận đơn cũ.</li>
+                      <li><strong>Mở trực tiếp trên App Shopee:</strong> Bấm nút "Mở Shopee Mua Ngay" hoặc quét mã QR để mở thẳng trong ứng dụng Shopee.</li>
+                      <li><strong>Không dùng tài khoản tạo link để mua:</strong> Shopee chặn chính sách "tự mua hàng", hãy dùng tài khoản Shopee người thân để mua.</li>
+                      <li><strong>Thanh toán trong 24h:</strong> Thêm vào giỏ và đặt hàng ngay sau khi mở link để giữ phiên theo dõi (Cookie).</li>
+                    </ul>
                   </div>
 
                   {!convertedData.isLoggedIn && (

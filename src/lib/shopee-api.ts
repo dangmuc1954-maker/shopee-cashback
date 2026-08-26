@@ -2,6 +2,7 @@ import crypto from 'crypto';
 
 /**
  * Module kết nối trực tiếp với Shopee Affiliate Open API (GraphQL)
+ * Hỗ trợ tạo Link rút gọn chính thức và Tự động đồng bộ báo cáo đơn hàng
  */
 
 // 1. Tạo Link rút gọn tiếp thị chính thức từ Shopee Open API
@@ -14,18 +15,23 @@ export async function generateShopeeApiShortLink(
   try {
     const timestamp = Math.floor(Date.now() / 1000);
     const query = `
-      mutation {
+      mutation GenerateShortLink($originUrl: String!, $subIds: [String!]) {
         generateShortLink(input: {
-          originUrl: "${originUrl}",
-          subIds: ["${subId}"]
+          originUrl: $originUrl,
+          subIds: $subIds
         }) {
           shortLink
         }
       }
     `;
 
-    const payload = JSON.stringify({ query });
-    const factor = appId + timestamp + payload + secretKey;
+    const variables = {
+      originUrl,
+      subIds: subId ? [subId] : [],
+    };
+
+    const payload = JSON.stringify({ query, variables });
+    const factor = `${appId}${timestamp}${payload}${secretKey}`;
     const signature = crypto.createHash('sha256').update(factor).digest('hex');
 
     const response = await fetch('https://open-api.affiliate.shopee.vn/graphql', {
@@ -38,6 +44,9 @@ export async function generateShopeeApiShortLink(
     });
 
     const resData = await response.json();
+    if (resData.errors) {
+      console.warn('Shopee Open API generateShortLink warning:', resData.errors);
+    }
     const shortLink = resData?.data?.generateShortLink?.shortLink;
     return shortLink || null;
   } catch (err) {
@@ -60,10 +69,10 @@ export async function fetchShopeeConversionReport(
     const end = endTimeSeconds || now;
 
     const query = `
-      query {
+      query GetConversionReport($start: Int, $end: Int) {
         conversionReport(
-          purchaseTimeStart: ${start},
-          purchaseTimeEnd: ${end},
+          purchaseTimeStart: $start,
+          purchaseTimeEnd: $end,
           limit: 100
         ) {
           nodes {
@@ -86,8 +95,13 @@ export async function fetchShopeeConversionReport(
       }
     `;
 
-    const payload = JSON.stringify({ query });
-    const factor = appId + timestamp + payload + secretKey;
+    const variables = {
+      start,
+      end,
+    };
+
+    const payload = JSON.stringify({ query, variables });
+    const factor = `${appId}${timestamp}${payload}${secretKey}`;
     const signature = crypto.createHash('sha256').update(factor).digest('hex');
 
     const response = await fetch('https://open-api.affiliate.shopee.vn/graphql', {
@@ -100,6 +114,9 @@ export async function fetchShopeeConversionReport(
     });
 
     const resData = await response.json();
+    if (resData.errors) {
+      console.warn('Shopee Open API conversionReport warning:', resData.errors);
+    }
     const nodes = resData?.data?.conversionReport?.nodes;
     return Array.isArray(nodes) ? nodes : [];
   } catch (err) {
@@ -107,3 +124,29 @@ export async function fetchShopeeConversionReport(
     return null;
   }
 }
+
+// 3. Kiểm tra tính hợp lệ của App ID & Secret Key
+export async function testShopeeApiCredentials(
+  appId: string,
+  secretKey: string
+): Promise<{ success: boolean; message: string }> {
+  try {
+    const result = await fetchShopeeConversionReport(appId, secretKey);
+    if (result !== null) {
+      return {
+        success: true,
+        message: 'Kết nối Shopee Open API thành công!',
+      };
+    }
+    return {
+      success: false,
+      message: 'Không thể xác thực với Shopee Open API. Vui lòng kiểm tra lại App ID và Secret Key.',
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: `Lỗi kết nối Shopee API: ${err?.message || 'Không xác định'}`,
+    };
+  }
+}
+

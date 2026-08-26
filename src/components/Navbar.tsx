@@ -100,15 +100,6 @@ export default function Navbar() {
               Bảng Tính Hoa Hồng
             </Link>
             <Link 
-              href="/video-studio" 
-              className={`text-sm font-medium transition-colors hover:text-indigo-500 flex items-center gap-1 ${
-                pathname === '/video-studio' ? 'text-indigo-500 font-semibold' : 'text-slate-600 dark:text-slate-300'
-              }`}
-            >
-              <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
-              <span>Xưởng Video AI</span>
-            </Link>
-            <Link 
               href="/#faq" 
               className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-shopee-500 transition-colors"
             >

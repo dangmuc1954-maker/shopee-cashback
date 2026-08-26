@@ -118,18 +118,26 @@ export async function POST(req: Request) {
       let matchedUserId: string | null = null;
       if (subId) {
         const linkRecord = await prisma.convertedLink.findFirst({
-          where: { subId: subId },
+          where: {
+            OR: [
+              { subId: subId },
+              { subId: subId.toLowerCase() },
+              { subId: subId.toUpperCase() },
+            ],
+          },
         });
         if (linkRecord?.userId) {
           matchedUserId = linkRecord.userId;
         } else {
           // Thử tìm user có ID nằm trong prefix subId
-          const potentialUserId = subId.split('_')[0];
-          const userRecord = await prisma.user.findFirst({
-            where: { id: { startsWith: potentialUserId } },
-          });
-          if (userRecord) {
-            matchedUserId = userRecord.id;
+          const cleanSub = subId.replace(/^(u_|u|user_)/i, '');
+          const potentialPrefix = cleanSub.split('_')[0].toLowerCase();
+          if (potentialPrefix && potentialPrefix.length >= 3 && potentialPrefix !== 'guest') {
+            const allUsers = await prisma.user.findMany({ select: { id: true } });
+            const foundUser = allUsers.find((u) => u.id.toLowerCase().startsWith(potentialPrefix));
+            if (foundUser) {
+              matchedUserId = foundUser.id;
+            }
           }
         }
       }

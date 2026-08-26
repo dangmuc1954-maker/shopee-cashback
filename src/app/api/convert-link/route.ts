@@ -35,6 +35,7 @@ export async function POST(req: Request) {
     
     // Tự động giải mã link rút gọn thành link sản phẩm gốc
     const cleanOriginalUrl = await resolveShopeeShortLink(url);
+    const conv = convertToAffiliateUrl(cleanOriginalUrl, shopeeAffId, subId);
 
     let affiliateUrl = '';
 
@@ -53,7 +54,6 @@ export async function POST(req: Request) {
 
     // Nếu không có API Key hoặc API trả về rỗng -> Sử dụng định dạng Universal Tracking s.shopee.vn/an_redir chính thức
     if (!affiliateUrl) {
-      const conv = convertToAffiliateUrl(cleanOriginalUrl, shopeeAffId, subId);
       affiliateUrl = conv.affiliateUrl;
     }
 
@@ -78,6 +78,7 @@ export async function POST(req: Request) {
       data: {
         originalUrl: cleanOriginalUrl,
         affiliateUrl,
+        directUrl: conv.directUrl,
         subId,
         isLoggedIn: !!user,
         commissionRate: settings?.commissionUserPercent || 60,

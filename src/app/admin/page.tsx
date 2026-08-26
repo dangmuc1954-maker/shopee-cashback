@@ -33,8 +33,7 @@ import {
   LayoutDashboard,
   Clock,
   Database,
-  ArrowUpRight,
-  Film
+  ArrowUpRight
 } from 'lucide-react';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
@@ -522,15 +521,6 @@ export default function AdminDashboardPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {/* Nút Xưởng Tạo Video AI */}
-          <Link
-            href="/video-studio"
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md transition-colors"
-          >
-            <Film className="w-4 h-4" />
-            <span>🎬 Xưởng Video AI (Veo 3)</span>
-          </Link>
-
           {/* Nút Thêm Đơn Nhanh */}
           <button
             onClick={() => setShowAddOrderModal(true)}

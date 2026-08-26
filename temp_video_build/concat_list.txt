@@ -1,7 +1,0 @@
-file 'D:/web chuyển đổi/temp_video_build/scene1_hook_clip.mp4'
-file 'D:/web chuyển đổi/temp_video_build/scene2_secret_clip.mp4'
-file 'D:/web chuyển đổi/temp_video_build/scene3_step1_clip.mp4'
-file 'D:/web chuyển đổi/temp_video_build/scene4_step2_clip.mp4'
-file 'D:/web chuyển đổi/temp_video_build/scene5_step3_clip.mp4'
-file 'D:/web chuyển đổi/temp_video_build/scene6_payoff_clip.mp4'
-file 'D:/web chuyển đổi/temp_video_build/scene7_cta_clip.mp4'
