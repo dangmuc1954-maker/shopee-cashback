@@ -19,7 +19,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-sm text-slate-400 leading-relaxed">
-              Nền tảng hoàn tiền Shopee Affiliate tự động số 1 Việt Nam. Hoàn trực tiếp 60% tiền hoa hồng tiếp thị liên kết vào tài khoản ngân hàng của bạn.
+              Nền tảng hoàn tiền mua sắm Shopee tự động số 1 Việt Nam. Tự động tích lũy tiền hoàn vào ví và rút trực tiếp về tài khoản ngân hàng của bạn.
             </p>
           </div>
 
@@ -41,7 +41,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/#bang-tinh" className="hover:text-shopee-400 transition-colors">
-                  Công Thức Tính 60% Hoa Hồng
+                  Bảng Tính Tiền Hoàn
                 </Link>
               </li>
               <li>
@@ -60,7 +60,7 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               <li className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-amber-400" />
-                <span>Hoàn chuẩn xác 60% hoa hồng</span>
+                <span>Hoàn tiền tự động & minh bạch</span>
               </li>
               <li className="flex items-center gap-2">
                 <RefreshCw className="w-4 h-4 text-emerald-400" />

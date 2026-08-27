@@ -58,7 +58,7 @@ export default function LoginPage() {
             Đăng Nhập Khách Hàng
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Truy cập ví tiền và theo dõi 60% tiền hoa hồng hoàn lại của bạn
+            Truy cập ví tiền và theo dõi số dư tiền hoàn của bạn
           </p>
         </div>
 
@@ -118,7 +118,7 @@ export default function LoginPage() {
         <div className="text-center text-xs text-slate-500 dark:text-slate-400">
           Chưa có tài khoản?{' '}
           <Link href="/register" className="font-bold text-shopee-600 dark:text-shopee-400 hover:underline">
-            Đăng ký nhận 60% hoàn tiền ngay
+            Đăng ký nhận tiền hoàn ngay
           </Link>
         </div>
 

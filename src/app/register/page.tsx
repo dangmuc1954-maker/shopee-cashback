@@ -61,7 +61,7 @@ export default function RegisterPage() {
             Đăng Ký Tài Khoản
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Tạo tài khoản miễn phí để nhận trọn vẹn 60% tiền hoa hồng Shopee
+            Tạo tài khoản miễn phí để tự động tích lũy tiền hoàn mua sắm Shopee
           </p>
         </div>
 

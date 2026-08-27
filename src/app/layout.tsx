@@ -10,9 +10,9 @@ const inter = Inter({ subsets: ['latin', 'vietnamese'] });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://shopeecashback.online'),
-  title: 'Mua Sắm Thông Minh - Hoàn Tiền Nhanh Chóng',
+  title: 'Mua Sắm Thông Minh - Hoàn Tiền Shopee Tự Động',
   description:
-    'Công cụ hoàn tiền Shopee số 1 Việt Nam! Dán link sản phẩm bất kỳ để nhận lại 60% tiền hoa hồng mặt. Rút tiền nhanh 24/7 về thẻ ngân hàng từ 50.000 VNĐ.',
+    'Công cụ hoàn tiền mua sắm Shopee số 1 Việt Nam! Dán link sản phẩm bất kỳ để tự động nhận tiền hoàn vào ví. Rút tiền nhanh 24/7 về thẻ ngân hàng từ 50.000 VNĐ.',
   keywords: [
     'hoàn tiền shopee',
     'shopee cashback',
@@ -20,13 +20,13 @@ export const metadata: Metadata = {
     'mua sắm thông minh',
     'shopee affiliate',
     'rút tiền shopee',
-    'hoàn 60% hoa hồng',
+    'tích lũy tiền hoàn',
   ],
   authors: [{ name: 'Mua Sắm Thông Minh' }],
   openGraph: {
-    title: 'Mua Sắm Thông Minh - Hoàn Tiền Nhanh Chóng',
+    title: 'Mua Sắm Thông Minh - Hoàn Tiền Shopee Tự Động',
     description:
-      'Dán link sản phẩm Shopee bất kỳ để nhận lại 60% tiền hoa hồng mặt. Rút tiền nhanh 24/7 về mọi ngân hàng từ 50k!',
+      'Dán link sản phẩm Shopee bất kỳ để nhận tiền hoàn tự động vào ví. Rút tiền nhanh 24/7 về mọi ngân hàng từ 50k!',
     url: 'https://shopeecashback.online',
     siteName: 'Shopee Cashback Online',
     images: [
@@ -52,8 +52,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Mua Sắm Thông Minh - Hoàn Tiền Nhanh Chóng',
-    description: 'Nhận lại 60% tiền hoa hồng khi mua sắm Shopee. Rút tiền mặt nhanh 24/7 từ 50k!',
+    title: 'Mua Sắm Thông Minh - Hoàn Tiền Shopee Tự Động',
+    description: 'Nhận tiền hoàn tự động khi mua sắm Shopee. Rút tiền mặt nhanh 24/7 từ 50k!',
     images: ['https://shopeecashback.online/og-image.jpg'],
   },
   robots: {

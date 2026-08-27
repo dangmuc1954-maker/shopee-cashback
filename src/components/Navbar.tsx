@@ -68,7 +68,7 @@ export default function Navbar() {
               <span className="font-extrabold text-lg text-slate-900 dark:text-white tracking-tight flex items-center gap-1.5">
                 Shopee<span className="text-shopee-500">Cashback</span>
                 <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded-full bg-shopee-100 text-shopee-600 dark:bg-shopee-900/40 dark:text-shopee-400">
-                  60%
+                  Hoàn Tiền
                 </span>
               </span>
               <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
@@ -162,7 +162,7 @@ export default function Navbar() {
                   className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white rounded-xl gradient-shopee shadow-sm hover:opacity-95 hover:shadow-md transition-all"
                 >
                   <Sparkles className="w-4 h-4" />
-                  <span>Đăng Ký Nhận 60%</span>
+                  <span>Đăng Ký Nhận Tiền Hoàn</span>
                 </Link>
               </div>
             )}
@@ -212,7 +212,7 @@ export default function Navbar() {
             onClick={() => setMobileMenuOpen(false)}
             className="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
           >
-            Bảng Tính Hoa Hồng
+            Bảng Tính Tiền Hoàn
           </Link>
 
           {user ? (
@@ -249,7 +249,7 @@ export default function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-full text-center py-2.5 text-sm font-semibold rounded-xl text-white gradient-shopee"
               >
-                Đăng Ký Nhận 60% Hoa Hồng
+                Đăng Ký Nhận Tiền Hoàn
               </Link>
             </div>
           )}

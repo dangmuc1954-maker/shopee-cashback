@@ -154,7 +154,7 @@ export default function DashboardPage() {
             Xin chào, {user.fullname || user.phone}! 👋
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Chào mừng bạn đến với trung tâm quản lý hoàn tiền Shopee Affiliate 60%.
+            Chào mừng bạn đến với trung tâm quản lý tiền hoàn mua sắm Shopee.
           </p>
         </div>
 
@@ -233,7 +233,7 @@ export default function DashboardPage() {
             </div>
           </div>
           <p className="text-[11px] text-slate-400">
-            Tổng số tiền hoa hồng 60% bạn đã nhận về tài khoản ngân hàng.
+            Tổng số tiền hoàn bạn đã rút thành công về tài khoản ngân hàng.
           </p>
         </div>
 
@@ -294,7 +294,7 @@ export default function DashboardPage() {
                     Chưa có đơn hàng nào được ghi nhận
                   </p>
                   <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                    Hãy tạo link Shopee Affiliate ở trang chủ và hoàn tất mua hàng để nhận 60% tiền hoàn nhé!
+                    Hãy tạo link Shopee ở trang chủ và hoàn tất mua hàng để nhận tiền hoàn nhé!
                   </p>
                 </div>
               ) : (
@@ -305,8 +305,7 @@ export default function DashboardPage() {
                         <th className="py-3 px-4 rounded-l-xl">Mã Đơn Shopee</th>
                         <th className="py-3 px-4">Sản Phẩm</th>
                         <th className="py-3 px-4 text-right">Tổng Đơn</th>
-                        <th className="py-3 px-4 text-right">Hoa Hồng Shopee</th>
-                        <th className="py-3 px-4 text-right">Tiền Bạn Nhận (60%)</th>
+                        <th className="py-3 px-4 text-right">Tiền Hoàn Về Ví</th>
                         <th className="py-3 px-4 text-center rounded-r-xl">Trạng Thái</th>
                       </tr>
                     </thead>
@@ -321,9 +320,6 @@ export default function DashboardPage() {
                           </td>
                           <td className="py-3 px-4 text-right text-slate-600 dark:text-slate-400">
                             {ord.totalAmount.toLocaleString('vi-VN')} đ
-                          </td>
-                          <td className="py-3 px-4 text-right text-slate-500">
-                            {ord.shopeeCommission.toLocaleString('vi-VN')} đ
                           </td>
                           <td className="py-3 px-4 text-right font-bold text-emerald-600 dark:text-emerald-400">
                             +{ord.userCashback.toLocaleString('vi-VN')} đ
