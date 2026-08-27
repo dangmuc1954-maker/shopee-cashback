@@ -27,14 +27,27 @@ export default function HomePage() {
   const [convertedData, setConvertedData] = useState<{
     originalUrl: string;
     affiliateUrl: string;
+    directUrl?: string;
     subId: string;
     isLoggedIn: boolean;
     commissionRate: number;
+    productPreview?: {
+      title: string;
+      imageUrl: string;
+      brand?: string;
+      isOfficialShop?: boolean;
+      shopId?: string;
+      itemId?: string;
+    } | null;
   } | null>(null);
   const [copied, setCopied] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
 
-  // Calculator State
+  // Converted Product Estimator State
+  const [previewProductPrice, setPreviewProductPrice] = useState(250000);
+  const [previewCommRate, setPreviewCommRate] = useState(10);
+
+  // Calculator State (Section Dưới)
   const [calcPrice, setCalcPrice] = useState(1000000);
   const [calcRate, setCalcRate] = useState(10); // % hoa hồng ngành hàng
 
@@ -195,6 +208,126 @@ export default function HomePage() {
                       Hoàn 60% hoa hồng
                     </span>
                   </div>
+
+                  {/* THÔNG TIN SẢN PHẨM & DỰ TOÁN HOÀN TIỀN MINH BẠCH */}
+                  {convertedData.productPreview && (
+                    <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 space-y-4">
+                      {/* Product Header */}
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5">
+                        {convertedData.productPreview.imageUrl ? (
+                          <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-white border border-slate-200 dark:border-slate-700 shrink-0 shadow-sm">
+                            <img
+                              src={convertedData.productPreview.imageUrl}
+                              alt={convertedData.productPreview.title}
+                              className="w-full h-full object-cover"
+                            />
+                            {convertedData.productPreview.isOfficialShop && (
+                              <span className="absolute top-1 left-1 bg-red-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow-xs">
+                                Shopee Mall
+                              </span>
+                            )}
+                          </div>
+                        ) : null}
+
+                        <div className="flex-1 space-y-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            {convertedData.productPreview.isOfficialShop && (
+                              <span className="bg-red-50 text-red-600 dark:bg-red-950/50 dark:text-red-400 border border-red-200 dark:border-red-800 text-[10px] font-bold px-2 py-0.5 rounded-md">
+                                Chính Hãng Shopee Mall
+                              </span>
+                            )}
+                            {convertedData.productPreview.brand && (
+                              <span className="text-slate-500 dark:text-slate-400 text-xs font-semibold">
+                                Thương hiệu: <strong className="text-slate-700 dark:text-slate-200">{convertedData.productPreview.brand}</strong>
+                              </span>
+                            )}
+                          </div>
+                          <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white line-clamp-2 leading-snug">
+                            {convertedData.productPreview.title}
+                          </h4>
+                          <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-semibold pt-0.5">
+                            <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                            <span>Đủ điều kiện nhận lại <strong>60% hoa hồng</strong> tự động vào ví</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Bảng Dự Toán Minh Bạch */}
+                      <div className="pt-3.5 border-t border-slate-200/80 dark:border-slate-700/80 space-y-3">
+                        <div className="flex flex-wrap items-center justify-between gap-1">
+                          <span className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                            <span>📊 Bảng Dự Toán Tiền Hoàn Minh Bạch</span>
+                          </span>
+                          <span className="text-[11px] font-semibold text-shopee-600 dark:text-shopee-400 bg-orange-50 dark:bg-orange-950/50 px-2 py-0.5 rounded">
+                            Tỷ lệ chia: 60% Khách / 40% Hệ thống
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                          <div className="sm:col-span-6">
+                            <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                              Giá sản phẩm dự kiến (VNĐ):
+                            </label>
+                            <input
+                              type="number"
+                              value={previewProductPrice}
+                              onChange={(e) => setPreviewProductPrice(Math.max(0, Number(e.target.value)))}
+                              className="w-full px-3 py-2 text-xs font-bold rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-shopee-500 focus:outline-none"
+                              placeholder="Nhập giá dự kiến (ví dụ: 250000)"
+                            />
+                          </div>
+
+                          <div className="sm:col-span-6">
+                            <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                              Hoa hồng Shop chi trả (Trung bình 5% - 15%):
+                            </label>
+                            <div className="flex gap-1">
+                              {[5, 8, 10, 12, 15].map((rate) => (
+                                <button
+                                  key={rate}
+                                  type="button"
+                                  onClick={() => setPreviewCommRate(rate)}
+                                  className={`flex-1 py-1.5 text-xs font-bold rounded-lg border transition-all ${
+                                    previewCommRate === rate
+                                      ? 'bg-shopee-500 text-white border-shopee-500 shadow-xs'
+                                      : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-shopee-300'
+                                  }`}
+                                >
+                                  {rate}%
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Thẻ Kết quả tính toán */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                          <div className="p-3 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50 space-y-0.5">
+                            <span className="text-[11px] font-semibold text-indigo-700 dark:text-indigo-300 block">
+                              Hoa hồng Shop trả cho Shopee (100%):
+                            </span>
+                            <span className="text-base sm:text-lg font-black text-indigo-900 dark:text-indigo-100">
+                              {Math.round(previewProductPrice * (previewCommRate / 100)).toLocaleString('vi-VN')} đ
+                            </span>
+                          </div>
+
+                          <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 shadow-xs space-y-0.5">
+                            <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-1">
+                              <Wallet className="w-3.5 h-3.5" />
+                              <span>Tiền hoàn ước tính bạn nhận về ví (60%):</span>
+                            </span>
+                            <span className="text-lg sm:text-xl font-black text-emerald-600 dark:text-emerald-400">
+                              +{Math.round(previewProductPrice * (previewCommRate / 100) * 0.6).toLocaleString('vi-VN')} đ
+                            </span>
+                          </div>
+                        </div>
+
+                        <p className="text-[11px] text-slate-400 dark:text-slate-500 italic">
+                          * Lưu ý: Số tiền hoàn chính xác 100% sẽ được tính dựa trên giá trị thanh toán thực tế của đơn sau khi trừ mã giảm giá Shopee.
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Input link + Actions */}
                   <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">

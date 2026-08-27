@@ -201,3 +201,93 @@ export function convertToAffiliateUrl(
   };
 }
 
+export interface ShopeeProductPreview {
+  title: string;
+  imageUrl: string;
+  brand?: string;
+  isOfficialShop?: boolean;
+  shopId?: string;
+  itemId?: string;
+  estimatedPrice?: number;
+}
+
+// Tự động quét thông tin sản phẩm (Tiêu đề, Ảnh bìa, Thương hiệu, Mall badge) từ Shopee
+export async function fetchShopeeProductPreview(url: string): Promise<ShopeeProductPreview | null> {
+  try {
+    const directProduct = extractShopAndItemId(url);
+    if (!directProduct) return null;
+
+    const { shopId, itemId } = directProduct;
+    const pageUrl = `https://shopee.vn/product/${shopId}/${itemId}`;
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4500);
+
+    const res = await fetch(pageUrl, {
+      signal: controller.signal,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+        'Accept-Language': 'vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7',
+      },
+    });
+    clearTimeout(timeout);
+
+    if (!res.ok) return null;
+
+    const html = await res.text();
+
+    const ogTitle = html.match(/<meta data-rh="true" property="og:title" content="([^"]+)"/i) || html.match(/<meta property="og:title" content="([^"]+)"/i);
+    const ogImage = html.match(/<meta data-rh="true" property="og:image" content="([^"]+)"/i) || html.match(/<meta property="og:image" content="([^"]+)"/i);
+
+    let title = ogTitle ? ogTitle[1].replace(/ \| Shopee Việt Nam/i, '').trim() : '';
+    let imageUrl = ogImage ? ogImage[1] : '';
+    let brand = '';
+    let isOfficialShop = false;
+
+    // Quét dữ liệu chi tiết từ initialState
+    const scriptRegex = /<script[^>]*>([\s\S]*?)<\/script>/gi;
+    let match;
+    while ((match = scriptRegex.exec(html)) !== null) {
+      const content = match[1];
+      if (content.includes('initialState') && content.includes('DOMAIN_PDP')) {
+        try {
+          const json = JSON.parse(content);
+          const pdp = json.initialState?.DOMAIN_PDP?.data?.PDP_BFF_DATA;
+          const k = Object.keys(pdp?.cachedMap || {})[0];
+          const data = pdp?.cachedMap[k];
+          if (data?.item) {
+            title = data.item.title || title;
+            if (data.item.image) {
+              imageUrl = data.item.image.startsWith('http') ? data.item.image : `https://down-vn.img.susercontent.com/file/${data.item.image}`;
+            }
+          }
+          if (data?.product_attributes?.attrs) {
+            const brandAttr = data.product_attributes.attrs.find((a: any) => a.name === 'Thương hiệu');
+            if (brandAttr) brand = brandAttr.value;
+          }
+          if (data?.product_meta?.show_official_shop_label_in_title) {
+            isOfficialShop = true;
+          }
+        } catch (e) {
+          // parse fallback
+        }
+      }
+    }
+
+    if (!title && !imageUrl) return null;
+
+    return {
+      title,
+      imageUrl,
+      brand,
+      isOfficialShop,
+      shopId,
+      itemId,
+    };
+  } catch (err) {
+    return null;
+  }
+}
+
+

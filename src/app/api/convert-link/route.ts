@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth';
-import { isValidShopeeUrl, convertToAffiliateUrl, generateSubId, resolveShopeeShortLink } from '@/lib/shopee';
+import { isValidShopeeUrl, convertToAffiliateUrl, generateSubId, resolveShopeeShortLink, fetchShopeeProductPreview } from '@/lib/shopee';
 import { generateShopeeApiShortLink } from '@/lib/shopee-api';
 
 export async function POST(req: Request) {
@@ -42,6 +42,9 @@ export async function POST(req: Request) {
     const cleanOriginalUrl = await resolveShopeeShortLink(url);
     const conv = convertToAffiliateUrl(cleanOriginalUrl, shopeeAffId, subId);
 
+    // Quét thông tin sản phẩm (Tiêu đề, ảnh bìa, shop Mall, thương hiệu)
+    const productPreview = await fetchShopeeProductPreview(cleanOriginalUrl);
+
     let affiliateUrl = '';
 
     // Nếu Admin đã cấu hình Open API App ID & Secret Key, ưu tiên gọi thẳng Shopee API
@@ -70,6 +73,7 @@ export async function POST(req: Request) {
           originalUrl: cleanOriginalUrl,
           affiliateUrl: affiliateUrl,
           subId: subId,
+          productTitle: productPreview?.title || null,
           clicks: 0,
         },
       });
@@ -87,6 +91,7 @@ export async function POST(req: Request) {
         subId,
         isLoggedIn: !!user,
         commissionRate: settings?.commissionUserPercent || 60,
+        productPreview,
       },
     });
   } catch (error: any) {
