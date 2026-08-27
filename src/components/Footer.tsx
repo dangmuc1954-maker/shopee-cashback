@@ -40,13 +40,13 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/#bang-tinh" className="hover:text-shopee-400 transition-colors">
-                  Bảng Tính Tiền Hoàn
+                <Link href="/#cach-hoat-dong" className="hover:text-shopee-400 transition-colors">
+                  Hướng Dẫn Mua Hàng Hoàn Tiền
                 </Link>
               </li>
               <li>
-                <Link href="/#cach-hoat-dong" className="hover:text-shopee-400 transition-colors">
-                  Hướng Dẫn Mua Hàng Hoàn Tiền
+                <Link href="/#faq" className="hover:text-shopee-400 transition-colors">
+                  Câu Hỏi Thường Gặp (FAQ)
                 </Link>
               </li>
             </ul>
