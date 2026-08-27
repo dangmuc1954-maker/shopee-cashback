@@ -56,6 +56,9 @@ export default function HomePage() {
       const data = await res.json();
       if (data.success && data.data) {
         setConvertedData(data.data);
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('trigger-money-rain'));
+        }
         toast.success('Chuyển đổi link Shopee Affiliate thành công!');
       } else {
         toast.error(data.message || 'Lỗi chuyển đổi link');
