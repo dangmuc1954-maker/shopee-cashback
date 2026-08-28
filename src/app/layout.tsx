@@ -9,14 +9,13 @@ import { Toaster } from 'sonner';
 const inter = Inter({ subsets: ['latin', 'vietnamese'] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://shopeecashback.online'),
+  metadataBase: new URL('https://muasamthongminh.online'),
   title: 'Mua Sắm Thông Minh - Hoàn Tiền Shopee Tự Động',
   description:
     'Công cụ hoàn tiền mua sắm Shopee số 1 Việt Nam! Dán link sản phẩm bất kỳ để tự động nhận tiền hoàn vào ví. Rút tiền nhanh 24/7 về thẻ ngân hàng từ 50.000 VNĐ.',
   keywords: [
     'hoàn tiền shopee',
-    'shopee cashback',
-    'shopeecashback.online',
+    'muasamthongminh.online',
     'mua sắm thông minh',
     'shopee affiliate',
     'rút tiền shopee',
@@ -27,20 +26,20 @@ export const metadata: Metadata = {
     title: 'Mua Sắm Thông Minh - Hoàn Tiền Shopee Tự Động',
     description:
       'Dán link sản phẩm Shopee bất kỳ để nhận tiền hoàn tự động vào ví. Rút tiền nhanh 24/7 về mọi ngân hàng từ 50k!',
-    url: 'https://shopeecashback.online',
-    siteName: 'Shopee Cashback Online',
+    url: 'https://muasamthongminh.online',
+    siteName: 'Mua Sắm Thông Minh',
     images: [
       {
-        url: 'https://shopeecashback.online/og-image.jpg',
-        secureUrl: 'https://shopeecashback.online/og-image.jpg',
+        url: 'https://muasamthongminh.online/og-image.jpg',
+        secureUrl: 'https://muasamthongminh.online/og-image.jpg',
         width: 1200,
         height: 630,
         type: 'image/jpeg',
         alt: 'Mua Sắm Thông Minh - Hoàn Tiền Nhanh Chóng',
       },
       {
-        url: 'https://shopeecashback.online/og-image.png',
-        secureUrl: 'https://shopeecashback.online/og-image.png',
+        url: 'https://muasamthongminh.online/og-image.png',
+        secureUrl: 'https://muasamthongminh.online/og-image.png',
         width: 1200,
         height: 630,
         type: 'image/png',
@@ -54,7 +53,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Mua Sắm Thông Minh - Hoàn Tiền Shopee Tự Động',
     description: 'Nhận tiền hoàn tự động khi mua sắm Shopee. Rút tiền mặt nhanh 24/7 từ 50k!',
-    images: ['https://shopeecashback.online/og-image.jpg'],
+    images: ['https://muasamthongminh.online/og-image.jpg'],
   },
   robots: {
     index: true,
