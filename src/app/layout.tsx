@@ -9,41 +9,41 @@ import { Toaster } from 'sonner';
 const inter = Inter({ subsets: ['latin', 'vietnamese'] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://muasamthongminh.online'),
-  title: 'Mua Sắm Thông Minh - Hoàn Tiền Shopee Tự Động',
+  metadataBase: new URL('https://muasamtietkiem.online'),
+  title: 'Mua Sắm Tiết Kiệm - Hoàn Tiền Shopee Tự Động',
   description:
     'Công cụ hoàn tiền mua sắm Shopee số 1 Việt Nam! Dán link sản phẩm bất kỳ để tự động nhận tiền hoàn vào ví. Rút tiền nhanh 24/7 về thẻ ngân hàng từ 50.000 VNĐ.',
   keywords: [
     'hoàn tiền shopee',
-    'muasamthongminh.online',
-    'mua sắm thông minh',
+    'muasamtietkiem.online',
+    'mua sắm tiết kiệm',
     'shopee affiliate',
     'rút tiền shopee',
     'tích lũy tiền hoàn',
   ],
-  authors: [{ name: 'Mua Sắm Thông Minh' }],
+  authors: [{ name: 'Mua Sắm Tiết Kiệm' }],
   openGraph: {
-    title: 'Mua Sắm Thông Minh - Hoàn Tiền Shopee Tự Động',
+    title: 'Mua Sắm Tiết Kiệm - Hoàn Tiền Shopee Tự Động',
     description:
       'Dán link sản phẩm Shopee bất kỳ để nhận tiền hoàn tự động vào ví. Rút tiền nhanh 24/7 về mọi ngân hàng từ 50k!',
-    url: 'https://muasamthongminh.online',
-    siteName: 'Mua Sắm Thông Minh',
+    url: 'https://muasamtietkiem.online',
+    siteName: 'Mua Sắm Tiết Kiệm',
     images: [
       {
-        url: 'https://muasamthongminh.online/og-image.jpg',
-        secureUrl: 'https://muasamthongminh.online/og-image.jpg',
+        url: 'https://muasamtietkiem.online/og-image.jpg',
+        secureUrl: 'https://muasamtietkiem.online/og-image.jpg',
         width: 1200,
         height: 630,
         type: 'image/jpeg',
-        alt: 'Mua Sắm Thông Minh - Hoàn Tiền Nhanh Chóng',
+        alt: 'Mua Sắm Tiết Kiệm - Hoàn Tiền Nhanh Chóng',
       },
       {
-        url: 'https://muasamthongminh.online/og-image.png',
-        secureUrl: 'https://muasamthongminh.online/og-image.png',
+        url: 'https://muasamtietkiem.online/og-image.png',
+        secureUrl: 'https://muasamtietkiem.online/og-image.png',
         width: 1200,
         height: 630,
         type: 'image/png',
-        alt: 'Mua Sắm Thông Minh - Hoàn Tiền Nhanh Chóng',
+        alt: 'Mua Sắm Tiết Kiệm - Hoàn Tiền Nhanh Chóng',
       },
     ],
     locale: 'vi_VN',
@@ -51,9 +51,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Mua Sắm Thông Minh - Hoàn Tiền Shopee Tự Động',
+    title: 'Mua Sắm Tiết Kiệm - Hoàn Tiền Shopee Tự Động',
     description: 'Nhận tiền hoàn tự động khi mua sắm Shopee. Rút tiền mặt nhanh 24/7 từ 50k!',
-    images: ['https://muasamthongminh.online/og-image.jpg'],
+    images: ['https://muasamtietkiem.online/og-image.jpg'],
   },
   robots: {
     index: true,
