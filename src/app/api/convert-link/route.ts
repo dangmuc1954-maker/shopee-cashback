@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth';
 import { isValidShopeeUrl, convertToAffiliateUrl, generateSubId, resolveShopeeShortLink, fetchShopeeProductPreview } from '@/lib/shopee';
-import { generateShopeeApiShortLink } from '@/lib/shopee-api';
+import { generateShopeeApiShortLink, fetchShopeeProductOffer } from '@/lib/shopee-api';
+import { extractShopAndItemId } from '@/lib/shopee';
 
 export async function POST(req: Request) {
   try {
@@ -43,12 +44,13 @@ export async function POST(req: Request) {
     const conv = convertToAffiliateUrl(cleanOriginalUrl, shopeeAffId, subId);
 
     // Quét thông tin sản phẩm (Tiêu đề, ảnh bìa, shop Mall, thương hiệu)
-    const productPreview = await fetchShopeeProductPreview(cleanOriginalUrl);
+    let productPreview = await fetchShopeeProductPreview(cleanOriginalUrl);
 
     let affiliateUrl = '';
 
     // Nếu Admin đã cấu hình Open API App ID & Secret Key, ưu tiên gọi thẳng Shopee API
     if (settings?.shopeeAppId && settings?.shopeeAppSecret) {
+      // 1. Lấy Link rút gọn chính thức qua API
       const apiShortLink = await generateShopeeApiShortLink(
         cleanOriginalUrl,
         subId,
@@ -57,6 +59,31 @@ export async function POST(req: Request) {
       );
       if (apiShortLink) {
         affiliateUrl = apiShortLink;
+      }
+
+      // 2. Truy vấn trực tiếp hoa hồng thật 100% của sản phẩm từ máy chủ Shopee GraphQL (productOfferV2)
+      const directProd = extractShopAndItemId(cleanOriginalUrl);
+      if (directProd?.itemId) {
+        const liveOffer = await fetchShopeeProductOffer(
+          directProd.itemId,
+          settings.shopeeAppId,
+          settings.shopeeAppSecret
+        );
+        if (liveOffer) {
+          productPreview = {
+            title: liveOffer.productName || productPreview?.title || 'Sản Phẩm Shopee Đủ Điều Kiện Hoàn Tiền',
+            imageUrl: liveOffer.imageUrl || productPreview?.imageUrl || '',
+            brand: productPreview?.brand || '',
+            isOfficialShop: productPreview?.isOfficialShop || false,
+            shopId: directProd.shopId,
+            itemId: directProd.itemId,
+            categoryName: productPreview?.categoryName || 'Sản Phẩm Shopee',
+            categoryIcon: productPreview?.categoryIcon || '🛍️',
+            shopeeCommissionRate: liveOffer.commissionRate || productPreview?.shopeeCommissionRate || 8,
+            estimatedPrice: liveOffer.price || productPreview?.estimatedPrice || 100000,
+            shopeeCommissionAmount: liveOffer.commission || productPreview?.shopeeCommissionAmount || 0,
+          };
+        }
       }
     }
 

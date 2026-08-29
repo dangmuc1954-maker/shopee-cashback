@@ -150,3 +150,71 @@ export async function testShopeeApiCredentials(
   }
 }
 
+// 4. Lấy thông tin giá và mức hoa hồng thật 100% từ Shopee Open API (GraphQL productOfferV2)
+export async function fetchShopeeProductOffer(
+  itemId: string,
+  appId: string,
+  secretKey: string
+): Promise<{
+  itemId: string;
+  productName: string;
+  imageUrl: string;
+  price: number;
+  commissionRate: number;
+  commission: number;
+} | null> {
+  try {
+    const timestamp = Math.floor(Date.now() / 1000);
+    const query = `
+      query GetProductOffer($itemId: Int64) {
+        productOfferV2(itemId: $itemId) {
+          nodes {
+            itemId
+            productName
+            imageUrl
+            price
+            commissionRate
+            commission
+            sellerCommissionRate
+            shopeeCommissionRate
+          }
+        }
+      }
+    `;
+
+    const variables = {
+      itemId: Number(itemId),
+    };
+
+    const payload = JSON.stringify({ query, variables });
+    const factor = `${appId}${timestamp}${payload}${secretKey}`;
+    const signature = crypto.createHash('sha256').update(factor).digest('hex');
+
+    const response = await fetch('https://open-api.affiliate.shopee.vn/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `SHA256 Credential=${appId}, Timestamp=${timestamp}, Signature=${signature}`,
+      },
+      body: payload,
+    });
+
+    const resData = await response.json();
+    const node = resData?.data?.productOfferV2?.nodes?.[0];
+    if (node) {
+      return {
+        itemId: String(node.itemId || itemId),
+        productName: node.productName || '',
+        imageUrl: node.imageUrl || '',
+        price: Number(node.price || 0),
+        commissionRate: Number(node.commissionRate || 0) * 100,
+        commission: Number(node.commission || 0),
+      };
+    }
+    return null;
+  } catch (err) {
+    console.error('Lỗi khi gọi Shopee Open API productOfferV2:', err);
+    return null;
+  }
+}
+
