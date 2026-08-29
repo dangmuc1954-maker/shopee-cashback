@@ -11,9 +11,9 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       settings: settings || {
-        shopeeAffId: '17300000000',
-        commissionUserPercent: 60,
-        commissionAdminPercent: 40,
+        shopeeAffId: '17352020564',
+        commissionUserPercent: 40,
+        commissionAdminPercent: 60,
         minWithdrawAmount: 50000,
         announcement: '',
       },
@@ -59,8 +59,8 @@ export async function PUT(req: Request) {
         shopeeAffId: String(shopeeAffId || '17352020564').trim(),
         shopeeAppId: shopeeAppId ? String(shopeeAppId).trim() : null,
         shopeeAppSecret: shopeeAppSecret ? String(shopeeAppSecret).trim() : null,
-        commissionUserPercent: Number(commissionUserPercent || 60),
-        commissionAdminPercent: Number(commissionAdminPercent || 40),
+        commissionUserPercent: Number(commissionUserPercent || 40),
+        commissionAdminPercent: Number(commissionAdminPercent || 60),
         minWithdrawAmount: Number(minWithdrawAmount || 50000),
         announcement: String(announcement || ''),
       },

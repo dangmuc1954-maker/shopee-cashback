@@ -57,8 +57,8 @@ export default function AdminDashboardPage() {
     shopeeAffId: '17352020564',
     shopeeAppId: '',
     shopeeAppSecret: '',
-    commissionUserPercent: 60,
-    commissionAdminPercent: 40,
+    commissionUserPercent: 40,
+    commissionAdminPercent: 60,
     minWithdrawAmount: 50000,
     announcement: '',
   });

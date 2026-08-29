@@ -73,8 +73,8 @@ export async function POST(req: Request) {
 
     // Lấy tỷ lệ hoa hồng
     const settings = await prisma.systemSetting.findUnique({ where: { id: 'DEFAULT' } });
-    const userPercent = (settings?.commissionUserPercent || 60) / 100;
-    const adminPercent = (settings?.commissionAdminPercent || 40) / 100;
+    const userPercent = (settings?.commissionUserPercent || 40) / 100;
+    const adminPercent = 1 - userPercent;
 
     const userCashback = Math.round(cleanCommission * userPercent);
     const adminProfit = Math.round(cleanCommission * adminPercent);

@@ -37,8 +37,8 @@ export async function POST(req: Request) {
     const settings = await prisma.systemSetting.findUnique({
       where: { id: 'DEFAULT' },
     });
-    const userPercent = (settings?.commissionUserPercent || 60) / 100;
-    const adminPercent = (settings?.commissionAdminPercent || 40) / 100;
+    const userPercent = (settings?.commissionUserPercent || 40) / 100;
+    const adminPercent = 1 - userPercent;
 
     let processedCount = 0;
     let newOrdersCount = 0;

@@ -85,10 +85,10 @@ model SystemSetting {
   shopeeAffId            String   @default("17352020564") // ID Affiliate Shopee của Admin
   shopeeAppId            String?  // App ID từ Shopee Open API (Tùy chọn)
   shopeeAppSecret        String?  // Secret Key từ Shopee Open API (Tùy chọn)
-  commissionUserPercent  Float    @default(60.0) // 60% hoa hồng cho khách
-  commissionAdminPercent Float    @default(40.0) // 40% hoa hồng cho admin
+  commissionUserPercent  Float    @default(40.0) // 40% hoa hồng cho khách
+  commissionAdminPercent Float    @default(60.0) // 60% hoa hồng cho admin
   minWithdrawAmount      Float    @default(50000.0) // Tối thiểu 50k rút tiền
-  announcement           String?  @default("Chào mừng bạn đến với hệ thống hoàn tiền Shopee 60% hoa hồng lớn nhất Việt Nam!")
+  announcement           String?  @default("Chào mừng bạn đến với hệ thống hoàn tiền Shopee 40% hoa hồng lớn nhất Việt Nam!")
   telegramChatId         String?
   updatedAt              DateTime @updatedAt
 }

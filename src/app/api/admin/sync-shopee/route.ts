@@ -35,8 +35,8 @@ export async function POST() {
       });
     }
 
-    const userPercent = (settings.commissionUserPercent || 60) / 100;
-    const adminPercent = (settings.commissionAdminPercent || 40) / 100;
+    const userPercent = (settings?.commissionUserPercent || 40) / 100;
+    const adminPercent = 1 - userPercent;
 
     let syncedCount = 0;
     let totalCommissionSynced = 0;
