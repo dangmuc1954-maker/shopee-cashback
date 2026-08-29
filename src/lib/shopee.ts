@@ -405,41 +405,48 @@ export async function fetchShopeeProductPreview(url: string): Promise<ShopeeProd
 
     if (directProduct) {
       const { shopId, itemId } = directProduct;
-      const pageUrl = `https://shopee.vn/product/${shopId}/${itemId}`;
+      const targetUrls = [
+        `https://shopee.vn/a-i.${shopId}.${itemId}`,
+        `https://shopee.vn/product/${shopId}/${itemId}`,
+      ];
 
-      try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 4000);
+      for (const pageUrl of targetUrls) {
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 6000);
 
-        const res = await fetch(pageUrl, {
-          signal: controller.signal,
-          headers: {
-            'User-Agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-            'Accept-Language': 'vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7',
-          },
-        });
-        clearTimeout(timeout);
+          const res = await fetch(pageUrl, {
+            signal: controller.signal,
+            headers: {
+              'User-Agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)',
+              'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+              'Accept-Language': 'vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7',
+            },
+          });
+          clearTimeout(timeout);
 
-        if (res.ok) {
-          const html = await res.text();
-          const ogTitle = html.match(/<meta data-rh="true" property="og:title" content="([^"]+)"/i) || html.match(/<meta property="og:title" content="([^"]+)"/i);
-          const ogImage = html.match(/<meta data-rh="true" property="og:image" content="([^"]+)"/i) || html.match(/<meta property="og:image" content="([^"]+)"/i);
+          if (res.ok) {
+            const html = await res.text();
+            const ogTitle = html.match(/property="og:title"\s+content="([^"]+)"/i) || html.match(/content="([^"]+)"\s+property="og:title"/i);
+            const ogImage = html.match(/property="og:image"\s+content="([^"]+)"/i) || html.match(/content="([^"]+)"\s+property="og:image"/i);
 
-          if (ogTitle && ogTitle[1]) {
-            title = ogTitle[1].replace(/ \| Shopee Việt Nam/i, '').trim();
+            if (ogTitle && ogTitle[1] && !ogTitle[1].includes('Shopee Việt Nam | Mua và Bán')) {
+              title = ogTitle[1].replace(/ \| Shopee Việt Nam/i, '').trim();
+            }
+            if (ogImage && ogImage[1] && !ogImage[1].includes('homepagefe')) {
+              imageUrl = ogImage[1];
+            }
+
+            // Phân tích trạng thái Shop Mall
+            if (html.includes('Shopee Mall') || html.includes('Official Store') || html.includes('shopee_mall')) {
+              isOfficialShop = true;
+            }
+
+            if (title && imageUrl) break;
           }
-          if (ogImage && ogImage[1]) {
-            imageUrl = ogImage[1];
-          }
-
-          // Phân tích trạng thái Shop Mall
-          if (html.includes('Shopee Mall') || html.includes('Official Store') || html.includes('shopee_mall')) {
-            isOfficialShop = true;
-          }
+        } catch (e) {
+          // Thử URL tiếp theo
         }
-      } catch (e) {
-        // Quét mạng lỗi, dùng fallback
       }
     }
 
