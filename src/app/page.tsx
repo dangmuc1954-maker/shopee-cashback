@@ -256,18 +256,18 @@ export default function HomePage() {
                             {convertedData.productPreview.title}
                           </h4>
 
-                          {/* Dòng Hoàn Tiền Ước Tính Rõ Ràng & Chuẩn Xác */}
+                          {/* Dòng Hoàn Tiền Dự Tính Rõ Ràng & Chuẩn Xác */}
                           <div className="pt-1.5 flex flex-wrap items-center gap-2.5">
                             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 shadow-2xs">
                               <Wallet className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                              <span className="text-xs font-bold">Hoàn tiền ước tính:</span>
+                              <span className="text-xs font-bold">Hoàn tiền dự tính:</span>
                               <span className="text-base sm:text-lg font-black text-emerald-600 dark:text-emerald-400">
-                                +{userCashbackAmount.toLocaleString('vi-VN')} đ
+                                ~+{userCashbackAmount.toLocaleString('vi-VN')} đ
                               </span>
                             </div>
 
                             <span className="text-[11px] text-slate-400 dark:text-slate-500 italic">
-                              * Tự động cộng vào ví sau khi nhận hàng thành công
+                              * Mức dự tính tham khảo (40% hoa hồng Shopee). Tiền hoàn thực tế sẽ tự động cộng vào ví sau khi nhận hàng thành công.
                             </span>
                           </div>
                         </div>
