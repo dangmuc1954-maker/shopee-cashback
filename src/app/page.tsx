@@ -374,10 +374,10 @@ export default function HomePage() {
                             <div className="space-y-0.5">
                               <span className="text-xs font-black text-emerald-800 dark:text-emerald-300 uppercase tracking-wide flex items-center gap-1.5">
                                 <Wallet className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                                <span>TIỀN MẶT BẠN NHẬN VỀ VÍ ({userPercent}% HOA HỒNG):</span>
+                                <span>HOÀN TIỀN DỰ KIẾN ({userPercent}% HOA HỒNG):</span>
                               </span>
                               <span className="text-[11px] text-emerald-700/80 dark:text-emerald-400/80 font-medium block">
-                                Tiền mặt cộng thẳng vào ví, rút về thẻ ngân hàng 24/7 từ 50.000 VNĐ
+                                Tiền mặt cộng thẳng vào ví sau khi nhận hàng, rút về mọi tài khoản ngân hàng từ 50.000 VNĐ
                               </span>
                             </div>
                             <div className="text-2xl sm:text-4xl font-black text-emerald-600 dark:text-emerald-400 shrink-0">

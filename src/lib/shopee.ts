@@ -56,11 +56,15 @@ export function extractShopAndItemId(url: string): { shopId: string; itemId: str
       return { shopId: iMatch[1], itemId: iMatch[2] };
     }
 
-    // Trường hợp 2: Định dạng canonical /product/shopid/itemid
-    // Ví dụ: https://shopee.vn/product/175753395/48300291997
-    const prodMatch = decoded.match(/\/product\/(\d+)\/(\d+)/);
-    if (prodMatch && prodMatch[1] && prodMatch[2]) {
-      return { shopId: prodMatch[1], itemId: prodMatch[2] };
+    // Trường hợp 2: Định dạng canonical /product/shopid/itemid hoặc slug /username/shopid/itemid
+    // Ví dụ: https://shopee.vn/product/175753395/48300291997 hoặc https://shopee.vn/opaanlp/1483137828/51102043379
+    const prodMatch = decoded.match(/\/product\/(\d+)\/(\d+)/) || decoded.match(/\/([a-zA-Z0-9_\-\.]+)\/(\d{5,})\/(\d{8,})/);
+    if (prodMatch) {
+      const sId = prodMatch[1] && /^\d+$/.test(prodMatch[1]) ? prodMatch[1] : prodMatch[2];
+      const iId = prodMatch[2] && /^\d+$/.test(prodMatch[1]) ? prodMatch[2] : prodMatch[3];
+      if (sId && iId) {
+        return { shopId: sId, itemId: iId };
+      }
     }
 
     // Trường hợp 3: Định dạng query params ?shopid=...&itemid=...
@@ -269,15 +273,16 @@ export function detectCategoryAndCommission(titleOrUrl: string): CategoryCommiss
     };
   }
 
-  // 4. Đồ gia dụng & Đời sống
-  if (/nồi|chảo|bếp|quạt|máy lọc|hút bụi|bình giữ nhiệt|chăn|ga|gối|đèn|kệ|tủ|bàn|ghế|dụng cụ|nước giặt|lau nhà/i.test(text)) {
-    let estPrice = 320000;
-    if (/máy|nồi|bếp|hút bụi/i.test(text)) estPrice = 850000;
+  // 4. Đồ gia dụng, nội thất & Đời sống
+  if (/nồi|chảo|bếp|quạt|máy lọc|hút bụi|bình giữ nhiệt|chăn|ga|gối|đèn|kệ|tủ|bàn|ghế|dụng cụ|nước giặt|lau nhà|gaming|nội thất/i.test(text)) {
+    let estPrice = 350000;
+    if (/máy|hút bụi/i.test(text)) estPrice = 850000;
+    else if (/bàn làm việc|bàn gaming|ghế công thái học|bàn chân sắt|kệ/i.test(text)) estPrice = 450000;
 
     return {
-      categoryName: 'Đồ Gia Dụng & Đời Sống',
+      categoryName: 'Đồ Gia Dụng & Nội Thất',
       icon: '🏡',
-      shopeeCommissionRate: 9.0, // Shopee trả 8-12% cho gia dụng
+      shopeeCommissionRate: 9.0, // Shopee trả 8-12% cho gia dụng, bàn ghế
       estimatedPrice: estPrice,
     };
   }
@@ -352,7 +357,7 @@ export async function fetchShopeeProductPreview(url: string): Promise<ShopeeProd
         const res = await fetch(pageUrl, {
           signal: controller.signal,
           headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+            'User-Agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
             'Accept-Language': 'vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7',
           },
