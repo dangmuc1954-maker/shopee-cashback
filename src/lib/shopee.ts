@@ -326,28 +326,33 @@ export function detectCategoryAndCommission(titleOrUrl: string): CategoryCommiss
   else if (/giày|sneaker|dép|sandal/i.test(t)) {
     categoryName = 'Giày Dép & Sneaker';
     icon = '👟';
-    price = /nike|adidas|mlb|converse/i.test(t) ? 1200000 : 320000;
-    shopeeRate = 13.0;
+    price = /nike|adidas|mlb|converse/i.test(t) ? 800000 : 200000;
+    shopeeRate = 12.0;
   } else if (/túi\s*xách|balo|ví\s*nam|ví\s*nữ/i.test(t)) {
     categoryName = 'Túi Xách & Balo';
     icon = '👜';
-    price = 280000;
-    shopeeRate = 13.0;
+    price = 180000;
+    shopeeRate = 12.0;
   } else if (/áo\s*khoác|áo\s*hoodie|áo\s*len|áo\s*vest/i.test(t)) {
     categoryName = 'Thời Trang Thu Đông';
     icon = '🧥';
-    price = 320000;
+    price = 220000;
     shopeeRate = 12.0;
-  } else if (/áo\s*(thun|polo|sơ\s*mi)|quần\s*(jean|tây|short|kaki)|đầm|váy/i.test(t)) {
-    categoryName = 'Thời Trang Nam Nữ';
+  } else if (/đầm|váy/i.test(t)) {
+    categoryName = 'Váy & Đầm Nữ';
     icon = '👗';
-    price = 180000;
+    price = 100000; // Giá váy trung bình Shopee 100.000đ
+    shopeeRate = 12.0; // Hoa hồng Shopee 12% = 12.000đ -> Khách nhận 40% = 4.800đ (Chuẩn 4.8k)
+  } else if (/áo\s*(thun|polo|sơ\s*mi)|quần\s*(jean|tây|short|kaki)/i.test(t)) {
+    categoryName = 'Quần Áo Thời Trang';
+    icon = '👕';
+    price = 100000; // Giá áo quần phổ thông 100.000đ -> Hoa hồng 12.000đ -> Khách nhận 40% = 4.800đ
     shopeeRate = 12.0;
   } else if (/đồ\s*lót|tất|vớ|nón|mũ|thắt\s*lưng|phụ\s*kiện/i.test(t)) {
     categoryName = 'Phụ Kiện Thời Trang';
     icon = '🧢';
-    price = 75000;
-    shopeeRate = 14.0;
+    price = 40000;
+    shopeeRate = 12.0;
   }
 
   // 4. Mỹ phẩm & Chăm sóc sắc đẹp
@@ -364,12 +369,12 @@ export function detectCategoryAndCommission(titleOrUrl: string): CategoryCommiss
   } else if (/son|son\s*kem|son\s*thỏi|son\s*bóng|tint/i.test(t)) {
     categoryName = 'Son Môi & Trang Điểm';
     icon = '💄';
-    price = /romand|black\s*rouge|3ce|merzy|bbia/i.test(t) ? 165000 : 130000;
+    price = 120000; // Giá son phổ thông 120.000đ -> Hoa hồng 12.000đ -> Khách nhận 40% = 4.800đ
     shopeeRate = 10.0;
   } else if (/sữa\s*rửa\s*mặt|tẩy\s*trang|toner|mặt\s*nạ|dầu\s*gội|sữa\s*tắm/i.test(t)) {
     categoryName = 'Chăm Sóc Cá Nhân';
     icon = '🫧';
-    price = 190000;
+    price = 120000;
     shopeeRate = 10.0;
   }
 
