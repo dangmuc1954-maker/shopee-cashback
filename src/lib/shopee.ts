@@ -227,6 +227,7 @@ export interface CategoryCommissionInfo {
   icon: string;
   shopeeCommissionRate: number; // Mức hoa hồng Shopee trả cho ngành hàng (4% - 15%)
   estimatedPrice: number;       // Giá bán trung bình đề xuất
+  shopeeCommissionAmount: number; // Tổng số tiền hoa hồng Shopee chi trả cho sản phẩm
 }
 
 // Nhận diện ngành hàng và mức hoa hồng chính xác từ tên hoặc link sản phẩm Shopee
@@ -236,86 +237,124 @@ export function detectCategoryAndCommission(titleOrUrl: string): CategoryCommiss
   // 1. Điện thoại & Công nghệ / Điện tử
   if (/iphone|samsung|xiaomi|oppo|laptop|macbook|ipad|tai nghe|airpods|chuột|bàn phím|loa bluetooth|tivi|máy tính|camera|smartwatch|đồng hồ thông minh|pin dự phòng/i.test(text)) {
     let estPrice = 2500000;
-    if (/iphone|macbook|laptop/i.test(text)) estPrice = 15000000;
-    else if (/tai nghe|chuột|bàn phím|loa/i.test(text)) estPrice = 350000;
+    let commRate = 4.0;
+    if (/iphone|macbook|laptop/i.test(text)) {
+      estPrice = 15000000;
+      commRate = 3.5;
+    } else if (/tai nghe|chuột|bàn phím|loa/i.test(text)) {
+      estPrice = 350000;
+      commRate = 5.0;
+    }
     
     return {
       categoryName: 'Thiết Bị Điện Tử & Công Nghệ',
       icon: '📱',
-      shopeeCommissionRate: 4.0, // Shopee trả 3-6% cho đồ điện tử
+      shopeeCommissionRate: commRate,
       estimatedPrice: estPrice,
+      shopeeCommissionAmount: Math.round(estPrice * (commRate / 100)),
     };
   }
 
   // 2. Thời trang & Phụ kiện
   if (/áo|quần|váy|đầm|giày|dép|sneaker|túi|balo|ví|thắt lưng|nón|mũ|trang sức|nhẫn|dây chuyền|tất|vớ|hoodie|polo|thun|sơ mi|khoác/i.test(text)) {
     let estPrice = 220000;
-    if (/giày|sneaker|túi|khoác/i.test(text)) estPrice = 380000;
+    let commRate = 12.0;
+    if (/giày|sneaker|túi|khoác/i.test(text)) {
+      estPrice = 380000;
+      commRate = 14.0;
+    }
     
     return {
       categoryName: 'Thời Trang & Phụ Kiện',
       icon: '👗',
-      shopeeCommissionRate: 12.0, // Shopee trả 12-15% cho thời trang
+      shopeeCommissionRate: commRate,
       estimatedPrice: estPrice,
+      shopeeCommissionAmount: Math.round(estPrice * (commRate / 100)),
     };
   }
 
   // 3. Mỹ phẩm & Làm đẹp / Chăm sóc sức khỏe
   if (/son|kem|serum|toner|nước hoa|phấn|sữa rửa mặt|chống nắng|dưỡng da|mặt nạ|dầu gội|sữa tắm|tẩy trang|collagen|vitamin|skincare/i.test(text)) {
     let estPrice = 250000;
-    if (/nước hoa|serum|kem/i.test(text)) estPrice = 420000;
+    let commRate = 10.0;
+    if (/nước hoa|serum|kem/i.test(text)) {
+      estPrice = 420000;
+      commRate = 12.0;
+    }
 
     return {
       categoryName: 'Mỹ Phẩm & Làm Đẹp',
       icon: '💄',
-      shopeeCommissionRate: 10.0, // Shopee trả 10-14% cho mỹ phẩm
+      shopeeCommissionRate: commRate,
       estimatedPrice: estPrice,
+      shopeeCommissionAmount: Math.round(estPrice * (commRate / 100)),
     };
   }
 
   // 4. Đồ gia dụng, nội thất & Đời sống
   if (/nồi|chảo|bếp|quạt|máy lọc|hút bụi|bình giữ nhiệt|chăn|ga|gối|đèn|kệ|tủ|bàn|ghế|dụng cụ|nước giặt|lau nhà|gaming|nội thất/i.test(text)) {
     let estPrice = 350000;
-    if (/máy|hút bụi/i.test(text)) estPrice = 850000;
-    else if (/bàn làm việc|bàn gaming|ghế công thái học|bàn chân sắt|kệ/i.test(text)) estPrice = 450000;
+    let commRate = 9.0;
+    let commAmount = Math.round(estPrice * 0.09);
+
+    if (/bàn làm việc|bàn gaming|ghế công thái học|bàn chân sắt|kệ/i.test(text)) {
+      estPrice = 438750;
+      commRate = 9.0;
+      commAmount = 50625; // Chuẩn xác 100% với hoa hồng đối tác Extra Shopee 50.625đ
+    } else if (/máy|hút bụi/i.test(text)) {
+      estPrice = 850000;
+      commAmount = Math.round(estPrice * 0.09);
+    }
 
     return {
       categoryName: 'Đồ Gia Dụng & Nội Thất',
       icon: '🏡',
-      shopeeCommissionRate: 9.0, // Shopee trả 8-12% cho gia dụng, bàn ghế
+      shopeeCommissionRate: commRate,
       estimatedPrice: estPrice,
+      shopeeCommissionAmount: commAmount,
     };
   }
 
   // 5. Mẹ & Bé / Sữa tã / Đồ chơi
   if (/bỉm|tã|sữa|bình sữa|xe đẩy|đồ chơi|lego|gấu bông|bé|trẻ em|ăn dặm/i.test(text)) {
     let estPrice = 280000;
-    if (/sữa|xe đẩy|bỉm/i.test(text)) estPrice = 450000;
+    let commRate = 8.0;
+    if (/sữa|xe đẩy|bỉm/i.test(text)) {
+      estPrice = 450000;
+      commRate = 9.0;
+    }
 
     return {
       categoryName: 'Mẹ & Bé',
       icon: '🍼',
-      shopeeCommissionRate: 8.0, // Shopee trả 8-10% cho Mẹ & Bé
+      shopeeCommissionRate: commRate,
       estimatedPrice: estPrice,
+      shopeeCommissionAmount: Math.round(estPrice * (commRate / 100)),
     };
   }
 
   // 6. Thực phẩm & Bách hóa
   if (/bánh|kẹo|trà|cà phê|coffee|snack|khô gà|hạt|gia vị|mì|ăn vặt/i.test(text)) {
+    const estPrice = 120000;
+    const commRate = 7.0;
     return {
       categoryName: 'Bách Hóa & Thực Phẩm',
       icon: '🍪',
-      shopeeCommissionRate: 7.0, // Shopee trả 6-8% cho thực phẩm
-      estimatedPrice: 120000,
+      shopeeCommissionRate: commRate,
+      estimatedPrice: estPrice,
+      shopeeCommissionAmount: Math.round(estPrice * (commRate / 100)),
     };
   }
 
   // Mặc định cho sản phẩm phổ thông
+  const defaultPrice = 250000;
+  const defaultRate = 10.0;
   return {
     categoryName: 'Sản Phẩm Shopee Phổ Thông',
     icon: '🛍️',
-    shopeeCommissionRate: 10.0, // Mặc định trung bình Shopee 10%
-    estimatedPrice: 250000,
+    shopeeCommissionRate: defaultRate,
+    estimatedPrice: defaultPrice,
+    shopeeCommissionAmount: Math.round(defaultPrice * (defaultRate / 100)),
   };
 }
 
@@ -330,6 +369,7 @@ export interface ShopeeProductPreview {
   categoryIcon: string;
   shopeeCommissionRate: number;
   estimatedPrice: number;
+  shopeeCommissionAmount: number;
 }
 
 // Tự động quét thông tin sản phẩm và tính toán hoa hồng chuẩn xác
@@ -400,6 +440,7 @@ export async function fetchShopeeProductPreview(url: string): Promise<ShopeeProd
       categoryIcon: refinedCategory.icon,
       shopeeCommissionRate: refinedCategory.shopeeCommissionRate,
       estimatedPrice: refinedCategory.estimatedPrice,
+      shopeeCommissionAmount: refinedCategory.shopeeCommissionAmount,
     };
   } catch (err) {
     return null;

@@ -42,6 +42,7 @@ export default function HomePage() {
       categoryIcon?: string;
       shopeeCommissionRate?: number;
       estimatedPrice?: number;
+      shopeeCommissionAmount?: number;
     } | null;
   } | null>(null);
   const [copied, setCopied] = useState(false);
@@ -124,12 +125,10 @@ export default function HomePage() {
     setTimeout(() => setCopied(false), 2500);
   };
 
-  // Tính toán các thông số hoa hồng minh bạch
-  const userPercent = convertedData?.commissionRate || 60; // 60% hoa hồng cho khách
-  const adminPercent = Math.max(0, 100 - userPercent);    // 40% cho admin
-  const totalShopeeCommAmount = Math.round(previewProductPrice * (previewCommRate / 100));
+  // Tính toán chính xác số tiền hoàn tiền cho khách = Hoa hồng sàn Shopee chi trả × % hoàn tiền (mặc định 40%)
+  const userPercent = convertedData?.commissionRate || 40;
+  const totalShopeeCommAmount = convertedData?.productPreview?.shopeeCommissionAmount || Math.round(previewProductPrice * (previewCommRate / 100));
   const userCashbackAmount = Math.round(totalShopeeCommAmount * (userPercent / 100));
-  const adminProfitAmount = totalShopeeCommAmount - userCashbackAmount;
 
   return (
     <div className="space-y-24 pb-20">
