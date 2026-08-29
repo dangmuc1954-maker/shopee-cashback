@@ -249,129 +249,169 @@ export interface CategoryCommissionInfo {
 
 // Nhận diện ngành hàng và mức hoa hồng chính xác từ tên hoặc link sản phẩm Shopee
 export function detectCategoryAndCommission(titleOrUrl: string): CategoryCommissionInfo {
-  const text = (titleOrUrl || '').toLowerCase();
+  const t = (titleOrUrl || '').toLowerCase();
 
-  // 1. Điện thoại & Công nghệ / Điện tử
-  if (/iphone|samsung|xiaomi|oppo|laptop|macbook|ipad|tai nghe|airpods|chuột|bàn phím|loa bluetooth|tivi|máy tính|camera|smartwatch|đồng hồ thông minh|pin dự phòng/i.test(text)) {
-    let estPrice = 2500000;
-    let commRate = 4.0;
-    if (/iphone|macbook|laptop/i.test(text)) {
-      estPrice = 15000000;
-      commRate = 3.5;
-    } else if (/tai nghe|chuột|bàn phím|loa/i.test(text)) {
-      estPrice = 350000;
-      commRate = 5.0;
-    }
-    
-    return {
-      categoryName: 'Thiết Bị Điện Tử & Công Nghệ',
-      icon: '📱',
-      shopeeCommissionRate: commRate,
-      estimatedPrice: estPrice,
-      shopeeCommissionAmount: Math.round(estPrice * (commRate / 100)),
-    };
+  let categoryName = 'Sản Phẩm Shopee Phổ Thông';
+  let icon = '🛍️';
+  let price = 250000;
+  let shopeeRate = 8.0; // Mặc định 8% hoa hồng Shopee
+
+  // 1. Điện thoại, Laptop & Thiết bị công nghệ
+  if (/iphone\s*1[456]/i.test(t)) {
+    categoryName = 'Điện Thoại Cao Cấp';
+    icon = '📱';
+    price = /pro\s*max/i.test(t) ? 29000000 : /pro/i.test(t) ? 24000000 : /plus/i.test(t) ? 20000000 : 18000000;
+    shopeeRate = 3.5;
+  } else if (/iphone\s*(1[123]|xs|xr|x|8|se)/i.test(t)) {
+    categoryName = 'Điện Thoại iPhone';
+    icon = '📱';
+    price = 8500000;
+    shopeeRate = 3.5;
+  } else if (/samsung\s*(galaxy\s*)?(s2[234]|z\s*fold|z\s*flip)/i.test(t)) {
+    categoryName = 'Điện Thoại Flagship';
+    icon = '📱';
+    price = 18000000;
+    shopeeRate = 3.5;
+  } else if (/samsung|xiaomi|oppo|realme|vivo/i.test(t)) {
+    categoryName = 'Điện Thoại & Smartphone';
+    icon = '📱';
+    price = 4500000;
+    shopeeRate = 4.0;
+  } else if (/laptop|macbook/i.test(t)) {
+    categoryName = 'Máy Tính & Laptop';
+    icon = '💻';
+    price = /macbook/i.test(t) ? 22000000 : 14000000;
+    shopeeRate = 3.5;
+  } else if (/ipad|máy tính bảng|tablet/i.test(t)) {
+    categoryName = 'Máy Tính Bảng / iPad';
+    icon = '📱';
+    price = 9500000;
+    shopeeRate = 3.5;
+  } else if (/tai nghe|airpods|headphone|earbuds/i.test(t)) {
+    categoryName = 'Tai Nghe & Âm Thanh';
+    icon = '🎧';
+    price = /airpods|sony|marshall/i.test(t) ? 2800000 : /havit|baseus|soundpeats/i.test(t) ? 450000 : 250000;
+    shopeeRate = 6.0;
+  } else if (/chuột|bàn phím|loa bluetooth|sạc dự phòng|củ sạc|cáp sạc|pin dự phòng|smartwatch|đồng hồ thông minh/i.test(t)) {
+    categoryName = 'Phụ Kiện Công Nghệ';
+    icon = '🔌';
+    price = /cáp|dây sạc/i.test(t) ? 90000 : /sạc dự phòng|củ sạc/i.test(t) ? 280000 : /loa/i.test(t) ? 550000 : 350000;
+    shopeeRate = 7.0;
   }
 
-  // 2. Thời trang & Phụ kiện
-  if (/áo|quần|váy|đầm|giày|dép|sneaker|túi|balo|ví|thắt lưng|nón|mũ|trang sức|nhẫn|dây chuyền|tất|vớ|hoodie|polo|thun|sơ mi|khoác/i.test(text)) {
-    let estPrice = 220000;
-    let commRate = 12.0;
-    if (/giày|sneaker|túi|khoác/i.test(text)) {
-      estPrice = 380000;
-      commRate = 14.0;
-    }
-    
-    return {
-      categoryName: 'Thời Trang & Phụ Kiện',
-      icon: '👗',
-      shopeeCommissionRate: commRate,
-      estimatedPrice: estPrice,
-      shopeeCommissionAmount: Math.round(estPrice * (commRate / 100)),
-    };
+  // 2. Nội thất, Đồ gia dụng & Đời sống
+  else if (/bàn\s*làm\s*việc|bàn\s*gaming|bàn\s*chân\s*(chữ\s*)?[kzuz]|ghế\s*gaming|ghế\s*công\s*thái\s*học/i.test(t)) {
+    categoryName = 'Nội Thất & Bàn Ghế Gaming';
+    icon = '🪑';
+    price = /kèm\s*kệ|kệ\s*lửng|2x4/i.test(t) ? 562500 : 438750;
+    shopeeRate = 9.0; // 9% hoa hồng Shopee Extra đối tác
+  } else if (/nồi\s*chiên|máy\s*hút\s*bụi|máy\s*lọc\s*không\s*khí|máy\s*rửa\s*bát|máy\s*giặt|tủ\s*lạnh/i.test(t)) {
+    categoryName = 'Thiết Bị Gia Dụng Lớn';
+    icon = '🏠';
+    price = /lock&lock|philips|tefal|xiaomi/i.test(t) ? 1650000 : 850000;
+    shopeeRate = 8.5;
+  } else if (/nồi|chảo|nồi\s*cơm|ấm\s*siêu\s*tốc|bếp\s*từ|máy\s*xay/i.test(t)) {
+    categoryName = 'Dụng Cụ Nhà Bếp';
+    icon = '🍳';
+    price = 450000;
+    shopeeRate = 8.5;
+  } else if (/chăn|ga|gối|đệm|rèm|tủ\s*quần\s*áo|kệ\s*sách|kệ|tủ|đèn/i.test(t)) {
+    categoryName = 'Đồ Gia Dụng & Trang Trí';
+    icon = '🏡';
+    price = 320000;
+    shopeeRate = 9.0;
   }
 
-  // 3. Mỹ phẩm & Làm đẹp / Chăm sóc sức khỏe
-  if (/son|kem|serum|toner|nước hoa|phấn|sữa rửa mặt|chống nắng|dưỡng da|mặt nạ|dầu gội|sữa tắm|tẩy trang|collagen|vitamin|skincare/i.test(text)) {
-    let estPrice = 250000;
-    let commRate = 10.0;
-    if (/nước hoa|serum|kem/i.test(text)) {
-      estPrice = 420000;
-      commRate = 12.0;
-    }
-
-    return {
-      categoryName: 'Mỹ Phẩm & Làm Đẹp',
-      icon: '💄',
-      shopeeCommissionRate: commRate,
-      estimatedPrice: estPrice,
-      shopeeCommissionAmount: Math.round(estPrice * (commRate / 100)),
-    };
+  // 3. Thời trang, Giày dép & Phụ kiện
+  else if (/giày|sneaker|dép|sandal/i.test(t)) {
+    categoryName = 'Giày Dép & Sneaker';
+    icon = '👟';
+    price = /nike|adidas|mlb|converse/i.test(t) ? 1200000 : 320000;
+    shopeeRate = 13.0;
+  } else if (/túi\s*xách|balo|ví\s*nam|ví\s*nữ/i.test(t)) {
+    categoryName = 'Túi Xách & Balo';
+    icon = '👜';
+    price = 280000;
+    shopeeRate = 13.0;
+  } else if (/áo\s*khoác|áo\s*hoodie|áo\s*len|áo\s*vest/i.test(t)) {
+    categoryName = 'Thời Trang Thu Đông';
+    icon = '🧥';
+    price = 320000;
+    shopeeRate = 12.0;
+  } else if (/áo\s*(thun|polo|sơ\s*mi)|quần\s*(jean|tây|short|kaki)|đầm|váy/i.test(t)) {
+    categoryName = 'Thời Trang Nam Nữ';
+    icon = '👗';
+    price = 180000;
+    shopeeRate = 12.0;
+  } else if (/đồ\s*lót|tất|vớ|nón|mũ|thắt\s*lưng|phụ\s*kiện/i.test(t)) {
+    categoryName = 'Phụ Kiện Thời Trang';
+    icon = '🧢';
+    price = 75000;
+    shopeeRate = 14.0;
   }
 
-  // 4. Đồ gia dụng, nội thất & Đời sống
-  if (/nồi|chảo|bếp|quạt|máy lọc|hút bụi|bình giữ nhiệt|chăn|ga|gối|đèn|kệ|tủ|bàn|ghế|dụng cụ|nước giặt|lau nhà|gaming|nội thất/i.test(text)) {
-    let estPrice = 350000;
-    let commRate = 9.0;
-    let commAmount = Math.round(estPrice * 0.09);
-
-    if (/bàn làm việc|bàn gaming|ghế công thái học|bàn chân sắt|kệ/i.test(text)) {
-      estPrice = 438750;
-      commRate = 9.0;
-      commAmount = 50625; // Chuẩn xác 100% với hoa hồng đối tác Extra Shopee 50.625đ
-    } else if (/máy|hút bụi/i.test(text)) {
-      estPrice = 850000;
-      commAmount = Math.round(estPrice * 0.09);
-    }
-
-    return {
-      categoryName: 'Đồ Gia Dụng & Nội Thất',
-      icon: '🏡',
-      shopeeCommissionRate: commRate,
-      estimatedPrice: estPrice,
-      shopeeCommissionAmount: commAmount,
-    };
+  // 4. Mỹ phẩm & Chăm sóc sắc đẹp
+  else if (/nước\s*hoa/i.test(t)) {
+    categoryName = 'Nước Hoa Cao Cấp';
+    icon = '✨';
+    price = 550000;
+    shopeeRate = 12.0;
+  } else if (/serum|kem\s*dưỡng|kem\s*chống\s*nắng|tretinoin|retinol|skincare/i.test(t)) {
+    categoryName = 'Mỹ Phẩm & Dưỡng Da';
+    icon = '🧴';
+    price = /anessa|la\s*roche|kiehl|skinceuticals/i.test(t) ? 650000 : 320000;
+    shopeeRate = 11.0;
+  } else if (/son|son\s*kem|son\s*thỏi|son\s*bóng|tint/i.test(t)) {
+    categoryName = 'Son Môi & Trang Điểm';
+    icon = '💄';
+    price = /romand|black\s*rouge|3ce|merzy|bbia/i.test(t) ? 165000 : 130000;
+    shopeeRate = 10.0;
+  } else if (/sữa\s*rửa\s*mặt|tẩy\s*trang|toner|mặt\s*nạ|dầu\s*gội|sữa\s*tắm/i.test(t)) {
+    categoryName = 'Chăm Sóc Cá Nhân';
+    icon = '🫧';
+    price = 190000;
+    shopeeRate = 10.0;
   }
 
-  // 5. Mẹ & Bé / Sữa tã / Đồ chơi
-  if (/bỉm|tã|sữa|bình sữa|xe đẩy|đồ chơi|lego|gấu bông|bé|trẻ em|ăn dặm/i.test(text)) {
-    let estPrice = 280000;
-    let commRate = 8.0;
-    if (/sữa|xe đẩy|bỉm/i.test(text)) {
-      estPrice = 450000;
-      commRate = 9.0;
-    }
-
-    return {
-      categoryName: 'Mẹ & Bé',
-      icon: '🍼',
-      shopeeCommissionRate: commRate,
-      estimatedPrice: estPrice,
-      shopeeCommissionAmount: Math.round(estPrice * (commRate / 100)),
-    };
+  // 5. Mẹ & Bé
+  else if (/sữa\s*bột|sữa\s*công\s*thức|xe\s*đẩy|nôi|ghế\s*ăn\s*dặm/i.test(t)) {
+    categoryName = 'Sữa & Đồ Dùng Trẻ Em';
+    icon = '🍼';
+    price = 580000;
+    shopeeRate = 8.0;
+  } else if (/bỉm|tã|bình\s*sữa|núm\s*ti/i.test(t)) {
+    categoryName = 'Tã Bỉm & Vệ Sinh Cho Bé';
+    icon = '👶';
+    price = 280000;
+    shopeeRate = 8.0;
+  } else if (/đồ\s*chơi|lego|gấu\s*bông/i.test(t)) {
+    categoryName = 'Đồ Chơi Cho Bé';
+    icon = '🧸';
+    price = 160000;
+    shopeeRate = 9.0;
   }
 
   // 6. Thực phẩm & Bách hóa
-  if (/bánh|kẹo|trà|cà phê|coffee|snack|khô gà|hạt|gia vị|mì|ăn vặt/i.test(text)) {
-    const estPrice = 120000;
-    const commRate = 7.0;
-    return {
-      categoryName: 'Bách Hóa & Thực Phẩm',
-      icon: '🍪',
-      shopeeCommissionRate: commRate,
-      estimatedPrice: estPrice,
-      shopeeCommissionAmount: Math.round(estPrice * (commRate / 100)),
-    };
+  else if (/thực\s*phẩm\s*chức\s*năng|collagen|vitamin|omega|whey/i.test(t)) {
+    categoryName = 'Thực Phẩm Bổ Sung';
+    icon = '💊';
+    price = 450000;
+    shopeeRate = 9.0;
+  } else if (/bánh|kẹo|trà|cà\s*phê|coffee|hạt|khô\s*bò|khô\s*gà|ăn\s*vặt/i.test(t)) {
+    categoryName = 'Bách Hóa & Thực Phẩm';
+    icon = '🍪';
+    price = 110000;
+    shopeeRate = 7.0;
   }
 
-  // Mặc định cho sản phẩm phổ thông
-  const defaultPrice = 250000;
-  const defaultRate = 10.0;
+  const shopeeCommissionAmount = Math.round(price * (shopeeRate / 100));
+
   return {
-    categoryName: 'Sản Phẩm Shopee Phổ Thông',
-    icon: '🛍️',
-    shopeeCommissionRate: defaultRate,
-    estimatedPrice: defaultPrice,
-    shopeeCommissionAmount: Math.round(defaultPrice * (defaultRate / 100)),
+    categoryName,
+    icon,
+    shopeeCommissionRate: shopeeRate,
+    estimatedPrice: price,
+    shopeeCommissionAmount,
   };
 }
 
