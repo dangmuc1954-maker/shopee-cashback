@@ -23,10 +23,16 @@ export function extractTitleFromUrl(url: string): string {
       decoded = decodeURIComponent(decoded);
     } catch {}
 
-    const match = decoded.match(/shopee\.vn\/([^\/\?]+)-i\.\d+\.\d+/i) || decoded.match(/shopee\.vn\/([^\/\?]+)/i);
-    if (match && match[1] && !match[1].startsWith('product') && !match[1].startsWith('search') && !match[1].startsWith('cart')) {
+    const cleanUrl = decoded.startsWith('http') ? decoded : `https://${decoded}`;
+    const parsed = new URL(cleanUrl);
+    if (parsed.hostname.startsWith('s.') || parsed.hostname.includes('shope.ee') || parsed.hostname.includes('shp.ee')) {
+      return ''; // Shortlink hash không phải là tên sản phẩm
+    }
+
+    const match = decoded.match(/shopee\.vn\/([^\/\?]+)-i\.\d+\.\d+/i) || decoded.match(/shopee\.vn\/([^\/\?]+)\/\d+\/\d+/i);
+    if (match && match[1] && !match[1].startsWith('product') && !match[1].startsWith('search') && !match[1].startsWith('cart') && !match[1].startsWith('opaanlp')) {
       const cleanSlug = match[1].replace(/[-_]+/g, ' ').trim();
-      if (cleanSlug.length > 3) {
+      if (cleanSlug.length > 3 && !/^[a-zA-Z0-9]{5,15}$/.test(cleanSlug)) {
         return cleanSlug;
       }
     }
@@ -126,54 +132,65 @@ export async function resolveShopeeShortLink(url: string): Promise<string> {
       clean = 'https://' + clean;
     }
 
-    // Nếu đã chứa shopId và itemId thì trả về link chuẩn ngay, không cần fetch
-    const directProduct = extractShopAndItemId(clean);
-    if (directProduct) {
-      return `https://shopee.vn/product/${directProduct.shopId}/${directProduct.itemId}`;
-    }
-
     const parsed = new URL(clean);
     const isShortLink = parsed.hostname.startsWith('s.') || 
                         parsed.hostname.includes('shope.ee') || 
                         parsed.hostname.includes('shp.ee');
 
-    if (isShortLink) {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 6000);
-      try {
-        const res = await fetch(clean, {
-          method: 'GET',
-          redirect: 'follow',
-          signal: controller.signal,
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Accept-Language': 'vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7',
-          },
-        });
-        clearTimeout(timeout);
-
-        if (res.url && res.url !== clean) {
-          const resolvedProd = extractShopAndItemId(res.url);
-          if (resolvedProd) {
-            return `https://shopee.vn/product/${resolvedProd.shopId}/${resolvedProd.itemId}`;
-          }
-          return cleanShopeeUrl(res.url);
-        }
-
-        // Đọc HTML content nếu redirect xảy ra bằng Javascript/meta-refresh
-        const text = await res.text();
-        const htmlMatch = text.match(/https?:\/\/(?:www\.)?shopee\.vn\/[^\s\n"\'<>]+/i);
-        if (htmlMatch) {
-          const htmlProd = extractShopAndItemId(htmlMatch[0]);
-          if (htmlProd) {
-            return `https://shopee.vn/product/${htmlProd.shopId}/${htmlProd.itemId}`;
-          }
-        }
-      } catch (fetchErr) {
-        clearTimeout(timeout);
+    if (!isShortLink) {
+      const directProduct = extractShopAndItemId(clean);
+      if (directProduct) {
+        return `https://shopee.vn/product/${directProduct.shopId}/${directProduct.itemId}`;
       }
+      return cleanShopeeUrl(clean);
     }
+
+    // 1. Với shortlink: Đầu tiên gọi với redirect: 'manual' (cực nhanh và hoạt động 100% trên Vercel)
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 4000);
+      const manualRes = await fetch(clean, {
+        method: 'GET',
+        redirect: 'manual',
+        signal: controller.signal,
+        headers: {
+          'User-Agent': 'curl/8.7.1',
+        },
+      });
+      clearTimeout(timeout);
+
+      const location = manualRes.headers.get('location');
+      if (location) {
+        const prodFromLoc = extractShopAndItemId(location);
+        if (prodFromLoc) {
+          return `https://shopee.vn/product/${prodFromLoc.shopId}/${prodFromLoc.itemId}`;
+        }
+        return cleanShopeeUrl(location);
+      }
+    } catch (e) {}
+
+    // 2. Fallback nếu manual không ra Location: gọi với follow redirect
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
+      const followRes = await fetch(clean, {
+        method: 'GET',
+        redirect: 'follow',
+        signal: controller.signal,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15',
+        },
+      });
+      clearTimeout(timeout);
+
+      if (followRes.url && followRes.url !== clean) {
+        const resolvedProd = extractShopAndItemId(followRes.url);
+        if (resolvedProd) {
+          return `https://shopee.vn/product/${resolvedProd.shopId}/${resolvedProd.itemId}`;
+        }
+        return cleanShopeeUrl(followRes.url);
+      }
+    } catch (e) {}
 
     return cleanShopeeUrl(clean);
   } catch (err) {
