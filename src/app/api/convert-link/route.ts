@@ -90,7 +90,7 @@ export async function POST(req: Request) {
         directUrl: conv.directUrl,
         subId,
         isLoggedIn: !!user,
-        commissionRate: settings?.commissionUserPercent || 40,
+        commissionRate: 40,
         productPreview,
       },
     });

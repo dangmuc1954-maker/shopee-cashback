@@ -125,8 +125,8 @@ export default function HomePage() {
     setTimeout(() => setCopied(false), 2500);
   };
 
-  // Tính toán chính xác số tiền hoàn tiền cho khách = Hoa hồng sàn Shopee chi trả × % hoàn tiền (mặc định 40%)
-  const userPercent = convertedData?.commissionRate || 40;
+  // Tính toán chính xác số tiền hoàn tiền cho khách = Hoa hồng sàn Shopee chi trả × % hoàn tiền (chuẩn 40%)
+  const userPercent = (convertedData?.commissionRate && convertedData.commissionRate <= 50) ? convertedData.commissionRate : 40;
   const totalShopeeCommAmount = convertedData?.productPreview?.shopeeCommissionAmount || Math.round(previewProductPrice * (previewCommRate / 100));
   const userCashbackAmount = Math.round(totalShopeeCommAmount * (userPercent / 100));
 
