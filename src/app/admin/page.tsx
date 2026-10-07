@@ -33,7 +33,10 @@ import {
   LayoutDashboard,
   Clock,
   Database,
-  ArrowUpRight
+  ArrowUpRight,
+  ChevronDown,
+  ChevronUp,
+  AlertTriangle
 } from 'lucide-react';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
@@ -57,16 +60,18 @@ export default function AdminDashboardPage() {
     shopeeAffId: '17352020564',
     shopeeAppId: '',
     shopeeAppSecret: '',
-    commissionUserPercent: 40,
-    commissionAdminPercent: 60,
+    commissionUserPercent: 60,
+    commissionAdminPercent: 40,
     minWithdrawAmount: 50000,
     announcement: '',
   });
 
-  // Excel Import state
+  // Excel Import 2-Step Preview & Approval state
   const [importFile, setImportFile] = useState<File | null>(null);
   const [importing, setImporting] = useState(false);
-  const [importResult, setImportResult] = useState<any>(null);
+  const [previewResult, setPreviewResult] = useState<any>(null);
+  const [confirmingPayout, setConfirmingPayout] = useState(false);
+  const [expandedUserGroup, setExpandedUserGroup] = useState<string | null>(null);
 
   // VietQR Modal for paying
   const [payingWithdrawal, setPayingWithdrawal] = useState<WithdrawalItem | null>(null);
@@ -165,7 +170,7 @@ export default function AdminDashboardPage() {
     }
   };
 
-  // 1. Handle Import Excel
+  // 1. Handle Import Excel (Chế độ Phân tích & Xem trước Preview)
   const handleImportSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!importFile) {
@@ -174,7 +179,7 @@ export default function AdminDashboardPage() {
     }
 
     setImporting(true);
-    setImportResult(null);
+    setPreviewResult(null);
     try {
       const formData = new FormData();
       formData.append('file', importFile);
@@ -184,11 +189,9 @@ export default function AdminDashboardPage() {
         body: formData,
       });
       const data = await res.json();
-      if (data.success) {
-        toast.success(data.message);
-        setImportResult(data.data);
-        setImportFile(null);
-        loadAllAdminData();
+      if (data.success && data.preview) {
+        toast.info('Đã phân tích file thành công! Vui lòng kiểm tra kỹ bảng báo cáo trước khi duyệt giải ngân.');
+        setPreviewResult(data);
       } else {
         toast.error(data.message || 'Lỗi khi xử lý file Excel');
       }
@@ -196,6 +199,52 @@ export default function AdminDashboardPage() {
       toast.error('Lỗi kết nối máy chủ!');
     } finally {
       setImporting(false);
+    }
+  };
+
+  // 1.1 Handle Confirm Excel Payout (Admin chính thức bấm Duyệt & Giải ngân tiền vào ví khách)
+  const handleConfirmExcelPayout = async () => {
+    if (!previewResult || !previewResult.rawItems) return;
+
+    const totalCashback = (previewResult.summary?.totalUserCashback || 0).toLocaleString('vi-VN');
+    const userCount = previewResult.summary?.matchedUserCount || 0;
+
+    if (!confirm(`XÁC NHẬN PHÊ DUYỆT GIẢI NGÂN:\n\nBạn có chắc chắn muốn giải ngân tổng cộng ${totalCashback} VNĐ vào ví cho ${userCount} khách hàng không?\n\n(Hành động này sẽ cộng trực tiếp tiền vào số dư khả dụng của các tài khoản trên).`)) {
+      return;
+    }
+
+    setConfirmingPayout(true);
+    try {
+      const res = await fetch('/api/admin/import-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'confirm',
+          items: previewResult.rawItems,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(data.message || 'Đã giải ngân tiền thành công!');
+        setPreviewResult(null);
+        setImportFile(null);
+        loadAllAdminData();
+      } else {
+        toast.error(data.message || 'Lỗi giải ngân');
+      }
+    } catch (err) {
+      toast.error('Lỗi kết nối máy chủ!');
+    } finally {
+      setConfirmingPayout(false);
+    }
+  };
+
+  // 1.2 Handle Cancel Preview (Hủy bỏ đợt đối soát, không cộng tiền)
+  const handleCancelPreview = () => {
+    if (confirm('Bạn có chắc chắn muốn hủy đợt đối soát này? (Không có đồng tiền nào bị trừ hoặc cộng).')) {
+      setPreviewResult(null);
+      setImportFile(null);
+      toast.info('Đã hủy đợt đối soát!');
     }
   };
 
@@ -1416,17 +1465,18 @@ export default function AdminDashboardPage() {
           )}
 
           {/* ========================================================================= */}
-          {/* TAB 5: ĐỐI SOÁT EXCEL */}
+          {/* TAB 5: ĐỐI SOÁT EXCEL (QUY TRÌNH 2 BƯỚC: XEM TRƯỚC ➔ DUYỆT MỚI CỘNG TIỀN) */}
           {/* ========================================================================= */}
           {activeTab === 'import' && (
-            <div className="max-w-3xl space-y-6">
+            <div className="max-w-4xl space-y-6">
               <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
                 <div>
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                    Nhập Báo Cáo Chuyển Đổi Shopee Affiliate (Excel / CSV)
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <FileSpreadsheet className="w-5 h-5 text-shopee-500" />
+                    <span>Đối Soát Báo Cáo Shopee Affiliate (Quy trình 2 bước an toàn)</span>
                   </h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                    Tải file báo cáo từ <strong>affiliate.shopee.vn</strong> $\rightarrow$ Báo Cáo Chuyển Đổi và dán vào đây để hệ thống tự động cộng {settings.commissionUserPercent}% vào ví khách!
+                    Bước 1: Nạp file để máy tính tính toán nháp (60% cho khách, 40% cho bạn) ➔ Bước 2: Bạn xem báo cáo chi tiết từng tài khoản, bấm duyệt thì tiền mới vào ví!
                   </p>
                 </div>
 
@@ -1440,54 +1490,235 @@ export default function AdminDashboardPage() {
                 </button>
               </div>
 
-              <form onSubmit={handleImportSubmit} className="space-y-4">
-                <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-3xl p-8 text-center hover:border-shopee-500 transition-colors bg-slate-50/50 dark:bg-slate-800/30 space-y-3">
-                  <div className="w-12 h-12 rounded-2xl bg-shopee-100 text-shopee-600 flex items-center justify-center mx-auto">
-                    <Upload className="w-6 h-6" />
+              {/* NẾU CHƯA CÓ KẾT QUẢ XEM TRƯỚC: HIỂN THỊ KHUNG NẠP FILE */}
+              {!previewResult ? (
+                <form onSubmit={handleImportSubmit} className="space-y-4">
+                  <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-3xl p-8 text-center hover:border-shopee-500 transition-colors bg-slate-50/50 dark:bg-slate-800/30 space-y-3">
+                    <div className="w-12 h-12 rounded-2xl bg-shopee-100 text-shopee-600 flex items-center justify-center mx-auto">
+                      <Upload className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <label className="cursor-pointer text-sm font-bold text-shopee-600 hover:underline">
+                        <span>Chọn file Excel báo cáo đơn hàng (.xlsx / .xls / .csv)</span>
+                        <input
+                          type="file"
+                          accept=".xlsx,.xls,.csv"
+                          onChange={(e) => setImportFile(e.target.files?.[0] || null)}
+                          className="hidden"
+                        />
+                      </label>
+                      <p className="text-xs text-slate-400 mt-1">
+                        {importFile ? `Đã chọn file: ${importFile.name}` : 'Hoặc kéo thả file xuất từ Shopee Affiliate vào đây'}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <label className="cursor-pointer text-sm font-bold text-shopee-600 hover:underline">
-                      <span>Chọn file Excel báo cáo (.xlsx / .xls / .csv)</span>
-                      <input
-                        type="file"
-                        accept=".xlsx,.xls,.csv"
-                        onChange={(e) => setImportFile(e.target.files?.[0] || null)}
-                        className="hidden"
-                      />
-                    </label>
-                    <p className="text-xs text-slate-400 mt-1">
-                      {importFile ? `Đã chọn file: ${importFile.name}` : 'Hoặc kéo thả file vào khung này'}
-                    </p>
+
+                  <button
+                    type="submit"
+                    disabled={importing || !importFile}
+                    className="w-full py-3.5 rounded-2xl bg-shopee-500 hover:bg-shopee-600 disabled:opacity-50 text-white font-bold text-sm shadow-md transition-colors flex items-center justify-center gap-2"
+                  >
+                    {importing ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span>Đang Đọc File &amp; Tính Toán Nháp...</span>
+                      </>
+                    ) : (
+                      <>
+                        <FileSpreadsheet className="w-5 h-5" />
+                        <span>Bước 1: Phân Tích &amp; Lập Báo Cáo Đối Soát (Chưa Cộng Tiền)</span>
+                      </>
+                    )}
+                  </button>
+                </form>
+              ) : (
+                /* NẾU ĐÃ CÓ BẢNG XEM TRƯỚC: HIỆN BÁO CÁO CHI TIẾT ĐỂ ADMIN KIỂM TOÁN */
+                <div className="space-y-6 animate-fadeIn">
+                  {/* Cảnh báo chế độ xem trước */}
+                  <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 flex items-start gap-3">
+                    <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                    <div className="space-y-1 text-xs text-amber-900 dark:text-amber-200">
+                      <p className="font-bold text-sm">CHẾ ĐỘ XEM TRƯỚC (BÁO CÁO KIỂM TOÁN NHÁP)</p>
+                      <p>
+                        Tiền hoàn <strong>CHƯA ĐƯỢC CỘNG</strong> vào tài khoản của khách. Vui lòng rà soát kỹ danh sách các khách hàng và số tiền hoàn bên dưới. Sau khi kiểm tra hoàn tất, bạn bấm nút <strong>[Xác Nhận &amp; Giải Ngân]</strong> ở dưới cùng thì hệ thống mới chính thức chuyển tiền vào ví.
+                      </p>
+                    </div>
                   </div>
-                </div>
 
-                <button
-                  type="submit"
-                  disabled={importing || !importFile}
-                  className="w-full py-3.5 rounded-2xl bg-shopee-500 hover:bg-shopee-600 disabled:opacity-50 text-white font-bold text-sm shadow-md transition-colors flex items-center justify-center gap-2"
-                >
-                  {importing ? (
-                    'Đang phân tích & đối soát đơn hàng...'
-                  ) : (
-                    <>
-                      <FileSpreadsheet className="w-5 h-5" />
-                      <span>Bắt Đầu Đối Soát &amp; Cộng Tiền Cho Khách</span>
-                    </>
-                  )}
-                </button>
-              </form>
+                  {/* 4 Thẻ số liệu tổng quan đợt đối soát */}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+                    <div className="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 shadow-2xs">
+                      <span className="text-[11px] font-semibold text-slate-400 block">Tổng Đơn Hàng</span>
+                      <span className="text-xl font-black text-slate-900 dark:text-white mt-1 block">
+                        {previewResult.summary.validOrders}
+                      </span>
+                      <span className="text-[10px] text-slate-500 mt-1 block">
+                        Khớp web: {previewResult.summary.matchedOrders} | Ngoài: {previewResult.summary.unmatchedOrders}
+                      </span>
+                    </div>
 
-              {importResult && (
-                <div className="p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-2 text-xs">
-                  <h4 className="font-bold text-emerald-800 dark:text-emerald-300 text-sm flex items-center gap-1.5">
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>Kết Quả Đối Soát:</span>
-                  </h4>
-                  <p>• Tổng số dòng đọc được: <strong>{importResult.totalRows}</strong></p>
-                  <p>• Đơn hàng hợp lệ xử lý: <strong>{importResult.processed}</strong></p>
-                  <p>• Tổng hoa hồng Shopee: <strong>{(importResult.totalCommission || 0).toLocaleString('vi-VN')} đ</strong></p>
-                  <p>• Tiền hoàn cho khách (60%): <strong>{(importResult.totalUserCashback || 0).toLocaleString('vi-VN')} đ</strong></p>
-                  <p>• Lợi nhuận của bạn (40%): <strong>{(importResult.totalAdminProfit || 0).toLocaleString('vi-VN')} đ</strong></p>
+                    <div className="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 shadow-2xs">
+                      <span className="text-[11px] font-semibold text-slate-400 block">Khách Được Hoàn</span>
+                      <span className="text-xl font-black text-shopee-600 dark:text-shopee-400 mt-1 block">
+                        {previewResult.summary.matchedUserCount} người
+                      </span>
+                      <span className="text-[10px] text-slate-500 mt-1 block">
+                        Tài khoản có đơn hợp lệ
+                      </span>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 shadow-2xs">
+                      <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 block">
+                        Sẽ Hoàn Cho Khách ({previewResult.summary.userPercent}%)
+                      </span>
+                      <span className="text-xl font-black text-emerald-600 dark:text-emerald-400 mt-1 block">
+                        {(previewResult.summary.totalUserCashback || 0).toLocaleString('vi-VN')} đ
+                      </span>
+                      <span className="text-[10px] text-emerald-700/80 mt-1 block">
+                        Tổng tiền chuẩn bị giải ngân
+                      </span>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 shadow-2xs">
+                      <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400 block">
+                        Lợi Nhuận Bạn ({previewResult.summary.adminPercent}%)
+                      </span>
+                      <span className="text-xl font-black text-amber-600 dark:text-amber-400 mt-1 block">
+                        {(previewResult.summary.totalAdminProfit || 0).toLocaleString('vi-VN')} đ
+                      </span>
+                      <span className="text-[10px] text-amber-700/80 mt-1 block">
+                        Phần tiền bạn giữ lại
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Danh sách từng tài khoản khách hàng */}
+                  <div className="rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-white dark:bg-slate-900 shadow-sm">
+                    <div className="p-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                      <h4 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                        <Users className="w-4 h-4 text-shopee-500" />
+                        <span>Danh Sách Khách Hàng Được Hoàn Tiền ({previewResult.userGroups?.length || 0})</span>
+                      </h4>
+                      <span className="text-xs text-slate-500 font-medium">Bấm "Chi tiết" để xem danh sách đơn</span>
+                    </div>
+
+                    <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                      {(!previewResult.userGroups || previewResult.userGroups.length === 0) ? (
+                        <div className="p-8 text-center text-xs text-slate-400">
+                          Không tìm thấy tài khoản nào khớp với mã Sub_ID trong file Excel này.
+                        </div>
+                      ) : (
+                        previewResult.userGroups.map((group: any) => (
+                          <div key={group.userId} className="p-4 hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-shopee-100 dark:bg-shopee-950/60 text-shopee-600 flex items-center justify-center font-bold text-sm shrink-0">
+                                  {group.fullname ? group.fullname[0]?.toUpperCase() : 'U'}
+                                </div>
+                                <div>
+                                  <h5 className="font-bold text-slate-900 dark:text-white text-sm">
+                                    {group.fullname}
+                                  </h5>
+                                  <p className="text-xs font-mono text-slate-500">
+                                    SĐT: {group.phone} • {group.orderCount} đơn mua thành công
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-4">
+                                <div className="text-right">
+                                  <span className="text-[11px] text-slate-400 block">Tiền hoàn nhận (60%):</span>
+                                  <span className="text-base font-black text-emerald-600 dark:text-emerald-400">
+                                    +{group.totalCashback.toLocaleString('vi-VN')} đ
+                                  </span>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={() => setExpandedUserGroup(expandedUserGroup === group.userId ? null : group.userId)}
+                                  className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors flex items-center gap-1 text-xs font-bold"
+                                >
+                                  <span>Chi tiết</span>
+                                  {expandedUserGroup === group.userId ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Danh sách đơn chi tiết của khách hàng khi mở rộng */}
+                            {expandedUserGroup === group.userId && (
+                              <div className="mt-3.5 pt-3.5 border-t border-slate-100 dark:border-slate-800 overflow-x-auto">
+                                <table className="w-full text-left text-xs">
+                                  <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 uppercase font-bold text-[10px]">
+                                    <tr>
+                                      <th className="py-2 px-3">Mã Đơn Shopee</th>
+                                      <th className="py-2 px-3">Sản Phẩm</th>
+                                      <th className="py-2 px-3 text-right">Hoa Hồng Shopee</th>
+                                      <th className="py-2 px-3 text-right">Hoàn Cho Khách (60%)</th>
+                                      <th className="py-2 px-3 text-center">Trạng Thái</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                                    {group.orders.map((ord: any, idx: number) => (
+                                      <tr key={idx} className="hover:bg-slate-50/50">
+                                        <td className="py-2 px-3 font-mono font-bold text-slate-900 dark:text-white">
+                                          {ord.orderSn}
+                                        </td>
+                                        <td className="py-2 px-3 max-w-[220px] truncate text-slate-600 dark:text-slate-300" title={ord.itemName}>
+                                          {ord.itemName}
+                                        </td>
+                                        <td className="py-2 px-3 text-right font-bold text-slate-700 dark:text-slate-300">
+                                          {ord.shopeeCommission.toLocaleString('vi-VN')} đ
+                                        </td>
+                                        <td className="py-2 px-3 text-right font-black text-emerald-600">
+                                          +{ord.userCashback.toLocaleString('vi-VN')} đ
+                                        </td>
+                                        <td className="py-2 px-3 text-center">
+                                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">
+                                            Chờ bạn duyệt
+                                          </span>
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            )}
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Thanh điều khiển quyết định ở cuối trang */}
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                    <button
+                      type="button"
+                      onClick={handleCancelPreview}
+                      disabled={confirmingPayout}
+                      className="w-full sm:w-auto px-5 py-3 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-bold transition-colors"
+                    >
+                      Hủy Đợt Đối Soát Này
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleConfirmExcelPayout}
+                      disabled={confirmingPayout || previewResult.summary?.matchedUserCount === 0}
+                      className="w-full sm:w-auto px-6 py-3 rounded-xl gradient-shopee text-white font-bold text-sm shadow-md hover:opacity-95 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+                    >
+                      {confirmingPayout ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          <span>Đang Thực Hiện Giải Ngân...</span>
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle2 className="w-5 h-5" />
+                          <span>Xác Nhận Phê Duyệt &amp; Giải Ngân ({(previewResult.summary?.totalUserCashback || 0).toLocaleString('vi-VN')} đ)</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

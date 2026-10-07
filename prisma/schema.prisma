@@ -53,8 +53,8 @@ model CashbackOrder {
   customerNote     String?   // Ghi chú của khách
   totalAmount      Float     @default(0) // Tổng tiền đơn hàng
   shopeeCommission Float     @default(0) // Tổng hoa hồng Shopee (100%)
-  userCashback     Float     @default(0) // Hoàn cho khách (40% hoa hồng)
-  adminProfit      Float     @default(0) // Lợi nhuận Admin (60% hoa hồng)
+  userCashback     Float     @default(0) // Hoàn cho khách (60% hoa hồng)
+  adminProfit      Float     @default(0) // Lợi nhuận Admin (40% hoa hồng)
   status           String    @default("PENDING") // "PENDING" | "APPROVED" | "REJECTED"
   orderTime        DateTime?
   completedAt      DateTime?
@@ -89,10 +89,10 @@ model SystemSetting {
   shopeeAffId            String   @default("17352020564") // ID Affiliate Shopee của Admin
   shopeeAppId            String?  // App ID từ Shopee Open API (Tùy chọn)
   shopeeAppSecret        String?  // Secret Key từ Shopee Open API (Tùy chọn)
-  commissionUserPercent  Float    @default(40.0) // 40% hoa hồng cho khách
-  commissionAdminPercent Float    @default(60.0) // 60% hoa hồng cho admin
+  commissionUserPercent  Float    @default(60.0) // 60% hoa hồng cho khách
+  commissionAdminPercent Float    @default(40.0) // 40% hoa hồng cho admin
   minWithdrawAmount      Float    @default(50000.0) // Tối thiểu 50k rút tiền
-  announcement           String?  @default("Chào mừng bạn đến với hệ thống hoàn tiền Shopee 40% hoa hồng lớn nhất Việt Nam!")
+  announcement           String?  @default("Chào mừng bạn đến với hệ thống hoàn tiền Shopee 60% hoa hồng lớn nhất Việt Nam!")
   telegramChatId         String?
   updatedAt              DateTime @updatedAt
 }

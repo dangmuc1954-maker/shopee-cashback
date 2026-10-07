@@ -127,7 +127,7 @@ export async function POST(req: Request) {
         directUrl: conv.directUrl,
         subId,
         isLoggedIn: !!user,
-        commissionRate: 40,
+        commissionRate: 60,
         productPreview,
       },
     });
