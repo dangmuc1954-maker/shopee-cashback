@@ -24,6 +24,16 @@ export async function POST(req: Request) {
     }
 
     const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json(
+        {
+          success: false,
+          requireAuth: true,
+          message: 'Vui lòng đăng ký hoặc đăng nhập tài khoản để tạo link và nhận hoàn tiền vào ví!',
+        },
+        { status: 401 }
+      );
+    }
 
     // Lấy cài đặt hệ thống (Shopee Affiliate ID của Admin) với cơ chế fallback an toàn
     let settings = null;
@@ -36,8 +46,7 @@ export async function POST(req: Request) {
     }
 
     const shopeeAffId = settings?.shopeeAffId || '17352020564';
-    const userIdentifier = user ? user.id : 'GUEST';
-    const subId = generateSubId(userIdentifier);
+    const subId = generateSubId(user.id);
     
     // Tự động giải mã link rút gọn thành link sản phẩm gốc
     const cleanOriginalUrl = await resolveShopeeShortLink(url);

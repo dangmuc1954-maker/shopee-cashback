@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   ArrowRight, 
@@ -17,11 +17,17 @@ import {
   Percent,
   Layers,
   Zap,
-  Info
+  Info,
+  Lock,
+  UserPlus,
+  LogIn,
+  X
 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function HomePage() {
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [inputUrl, setInputUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [convertedData, setConvertedData] = useState<{
@@ -52,10 +58,36 @@ export default function HomePage() {
   const [previewProductPrice, setPreviewProductPrice] = useState(250000);
   const [previewCommRate, setPreviewCommRate] = useState(10);
 
+  // Kiểm tra trạng thái đăng nhập khi vào trang chủ & khôi phục link chưa chuyển đổi
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.user) {
+          setCurrentUser(data.user);
+          // Khôi phục link nếu khách vừa đăng nhập / đăng ký xong
+          const pendingUrl = localStorage.getItem('pending_shopee_url');
+          if (pendingUrl) {
+            setInputUrl(pendingUrl);
+            localStorage.removeItem('pending_shopee_url');
+            toast.info('Đã khôi phục link sản phẩm Shopee của bạn!');
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const handleConvert = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!inputUrl.trim()) {
       toast.error('Vui lòng nhập đường link sản phẩm Shopee!');
+      return;
+    }
+
+    // CHẶN KHÁCH VÃNG LAI: Bắt buộc đăng ký / đăng nhập để nhận hoàn tiền
+    if (!currentUser) {
+      localStorage.setItem('pending_shopee_url', inputUrl.trim());
+      setShowAuthModal(true);
       return;
     }
 
@@ -68,6 +100,13 @@ export default function HomePage() {
         body: JSON.stringify({ url: inputUrl }),
       });
       const data = await res.json();
+
+      if (data.requireAuth) {
+        localStorage.setItem('pending_shopee_url', inputUrl.trim());
+        setShowAuthModal(true);
+        return;
+      }
+
       if (data.success && data.data) {
         setConvertedData(data.data);
         
@@ -479,6 +518,82 @@ export default function HomePage() {
             >
               Đóng
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL YÊU CẦU ĐĂNG NHẬP / ĐĂNG KÝ (DÀNH CHO KHÁCH VÃNG LAI) */}
+      {showAuthModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-2xl relative space-y-6">
+            {/* Nút đóng modal */}
+            <button
+              onClick={() => setShowAuthModal(false)}
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              aria-label="Đóng"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Header */}
+            <div className="text-center space-y-3 pt-2">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-shopee-500 to-amber-500 text-white flex items-center justify-center mx-auto shadow-lg shadow-orange-500/25">
+                <Lock className="w-7 h-7" />
+              </div>
+              <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                Đăng Nhập Để Nhận Hoàn Tiền
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed px-2">
+                Hệ thống chỉ tạo link hoàn tiền cho tài khoản thành viên để đảm bảo tiền hoa hồng được ghi nhận và tự động cộng vào ví của bạn.
+              </p>
+            </div>
+
+            {/* Quyền lợi thành viên */}
+            <div className="bg-orange-50/70 dark:bg-orange-950/30 border border-orange-200/80 dark:border-orange-800/50 rounded-2xl p-4 space-y-2.5">
+              <div className="flex items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300 font-medium">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                <span>Nhận hoàn tiền từ <strong>40% - 60%</strong> hoa hồng Shopee</span>
+              </div>
+              <div className="flex items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300 font-medium">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                <span>Rút tiền mặt 24/7 về thẻ ATM ngân hàng từ <strong>50.000 VNĐ</strong></span>
+              </div>
+              <div className="flex items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300 font-medium">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                <span>Quản lý lịch sử đơn hàng và số dư tích lũy trọn đời</span>
+              </div>
+            </div>
+
+            {/* Nút bấm hành động */}
+            <div className="space-y-2.5">
+              <Link
+                href="/register"
+                onClick={() => {
+                  if (inputUrl.trim()) localStorage.setItem('pending_shopee_url', inputUrl.trim());
+                  setShowAuthModal(false);
+                }}
+                className="w-full py-3.5 px-4 rounded-xl gradient-shopee text-white font-bold text-center text-sm shadow-md hover:shadow-lg hover:opacity-95 active:scale-98 transition-all flex items-center justify-center gap-2"
+              >
+                <UserPlus className="w-4 h-4" />
+                <span>Đăng Ký Tài Khoản Mới (Chỉ 30 Giây)</span>
+              </Link>
+
+              <Link
+                href="/login"
+                onClick={() => {
+                  if (inputUrl.trim()) localStorage.setItem('pending_shopee_url', inputUrl.trim());
+                  setShowAuthModal(false);
+                }}
+                className="w-full py-3 px-4 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-center text-sm transition-all flex items-center justify-center gap-2"
+              >
+                <LogIn className="w-4 h-4" />
+                <span>Tôi Đã Có Tài Khoản? Đăng Nhập</span>
+              </Link>
+            </div>
+
+            <p className="text-[11px] text-center text-slate-400 dark:text-slate-500">
+              * Link sản phẩm bạn vừa dán sẽ được tự động giữ lại sau khi đăng nhập thành công.
+            </p>
           </div>
         </div>
       )}

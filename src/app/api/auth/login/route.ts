@@ -49,6 +49,16 @@ export async function POST(req: Request) {
       maxAge: 30 * 24 * 60 * 60, // 30 ngày
     });
 
+    if (user.role === 'ADMIN') {
+      cookies().set('admin_token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 30 * 24 * 60 * 60,
+      });
+    }
+
     return NextResponse.json({
       success: true,
       message: 'Đăng nhập thành công!',

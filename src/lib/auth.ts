@@ -72,7 +72,10 @@ export async function getCurrentUser(): Promise<UserSession | null> {
 export async function getCurrentAdmin(): Promise<UserSession | null> {
   try {
     const cookieStore = cookies();
-    const token = cookieStore.get('admin_token')?.value;
+    let token = cookieStore.get('admin_token')?.value;
+    if (!token) {
+      token = cookieStore.get('auth_token')?.value;
+    }
     if (!token) return null;
 
     const payload = await verifySessionToken(token);

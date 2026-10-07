@@ -32,7 +32,12 @@ export default function LoginPage() {
         if (data.user?.role === 'ADMIN') {
           router.push('/admin');
         } else {
-          router.push('/dashboard');
+          const hasPending = typeof window !== 'undefined' && localStorage.getItem('pending_shopee_url');
+          if (hasPending) {
+            router.push('/');
+          } else {
+            router.push('/dashboard');
+          }
         }
         router.refresh();
       } else {
