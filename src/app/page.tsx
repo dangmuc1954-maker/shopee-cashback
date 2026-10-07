@@ -21,6 +21,7 @@ import {
   Lock,
   UserPlus,
   LogIn,
+  Send,
   X
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -57,6 +58,12 @@ export default function HomePage() {
   // Converted Product Estimator State
   const [previewProductPrice, setPreviewProductPrice] = useState(250000);
   const [previewCommRate, setPreviewCommRate] = useState(10);
+
+  // Bộ lọc ô tích "Đã mua hàng" để gửi thông tin về Admin
+  const [isPurchasedConfirmed, setIsPurchasedConfirmed] = useState(false);
+  const [orderCodeInput, setOrderCodeInput] = useState('');
+  const [reportingOrder, setReportingOrder] = useState(false);
+  const [isOrderReported, setIsOrderReported] = useState(false);
 
   // Kiểm tra trạng thái đăng nhập khi vào trang chủ & khôi phục link chưa chuyển đổi
   useEffect(() => {
@@ -109,6 +116,9 @@ export default function HomePage() {
 
       if (data.success && data.data) {
         setConvertedData(data.data);
+        setIsPurchasedConfirmed(false);
+        setOrderCodeInput('');
+        setIsOrderReported(false);
         
         // Tự động cập nhật mức giá và tỷ lệ hoa hồng Shopee dựa trên sản phẩm thật
         if (data.data.productPreview?.estimatedPrice) {
@@ -162,6 +172,36 @@ export default function HomePage() {
     trackClick(convertedData.subId);
     toast.success('Đã sao chép link hoàn tiền vào bộ nhớ tạm!');
     setTimeout(() => setCopied(false), 2500);
+  };
+
+  // Khách hàng bấm gửi thông tin đã mua hàng trên Shopee
+  const handleReportOrder = async () => {
+    if (!convertedData) return;
+    setReportingOrder(true);
+    try {
+      const res = await fetch('/api/user/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subId: convertedData.subId,
+          orderSn: orderCodeInput.trim() || undefined,
+          itemName: convertedData.productPreview?.title || 'Sản phẩm Shopee',
+          imageUrl: convertedData.productPreview?.imageUrl || undefined,
+          productUrl: convertedData.originalUrl || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(data.message || 'Đã ghi nhận đơn hàng thành công!');
+        setIsOrderReported(true);
+      } else {
+        toast.error(data.message || 'Lỗi gửi thông tin đơn hàng');
+      }
+    } catch (err) {
+      toast.error('Lỗi kết nối máy chủ!');
+    } finally {
+      setReportingOrder(false);
+    }
   };
 
   // Tính toán chính xác số tiền hoàn tiền cho khách = Hoa hồng sàn Shopee chi trả × % hoàn tiền (chuẩn 40%)
@@ -294,21 +334,6 @@ export default function HomePage() {
                           <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white line-clamp-2 leading-snug">
                             {convertedData.productPreview.title}
                           </h4>
-
-                          {/* Dòng Hoàn Tiền Dự Tính Rõ Ràng & Chuẩn Xác */}
-                          <div className="pt-1.5 flex flex-wrap items-center gap-2.5">
-                            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 shadow-2xs">
-                              <Wallet className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                              <span className="text-xs font-bold">Hoàn tiền dự tính:</span>
-                              <span className="text-base sm:text-lg font-black text-emerald-600 dark:text-emerald-400">
-                                ~+{userCashbackAmount.toLocaleString('vi-VN')} đ
-                              </span>
-                            </div>
-
-                            <span className="text-[11px] text-slate-400 dark:text-slate-500 italic">
-                              * Mức dự tính tham khảo (40% hoa hồng Shopee). Tiền hoàn thực tế sẽ tự động cộng vào ví sau khi nhận hàng thành công.
-                            </span>
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -351,6 +376,89 @@ export default function HomePage() {
                         <ExternalLink className="w-3.5 h-3.5" />
                       </a>
                     </div>
+                  </div>
+
+                  {/* BỘ LỌC Ô TÍCH XÁC NHẬN ĐÃ MUA HÀNG TRÊN SHOPEE */}
+                  <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-orange-50/70 via-amber-50/60 to-orange-50/70 dark:from-slate-800/80 dark:via-slate-800/60 dark:to-slate-800/80 border border-orange-200 dark:border-orange-800/60 space-y-3.5">
+                    <div className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        id="purchasedConfirmCheckbox"
+                        checked={isPurchasedConfirmed}
+                        onChange={(e) => setIsPurchasedConfirmed(e.target.checked)}
+                        className="w-5 h-5 mt-0.5 rounded border-orange-300 text-shopee-500 focus:ring-shopee-500 cursor-pointer accent-orange-500 shrink-0"
+                      />
+                      <div className="flex-1">
+                        <label
+                          htmlFor="purchasedConfirmCheckbox"
+                          className="font-bold text-sm sm:text-base text-slate-900 dark:text-white cursor-pointer select-none flex flex-wrap items-center gap-2"
+                        >
+                          <span>Tôi đã đặt mua sản phẩm này trên Shopee</span>
+                          {isOrderReported && (
+                            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100 dark:bg-emerald-950/80 dark:text-emerald-400 px-2.5 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-800">
+                              ✓ Đã Ghi Nhận Thành Công
+                            </span>
+                          )}
+                        </label>
+                        <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                          Chỉ tích vào ô này sau khi bạn đã mở Shopee và hoàn tất thanh toán đặt hàng để gửi thông tin sản phẩm về Admin rà soát đối soát hoàn tiền vào ví.
+                        </p>
+                      </div>
+                    </div>
+
+                    {isPurchasedConfirmed && (
+                      <div className="pt-3 border-t border-orange-200/80 dark:border-orange-800/50 space-y-3 animate-fadeIn">
+                        <div className="flex flex-col sm:flex-row gap-2.5">
+                          <input
+                            type="text"
+                            value={orderCodeInput}
+                            onChange={(e) => setOrderCodeInput(e.target.value)}
+                            placeholder="Nhập Mã Đơn Hàng Shopee (Không bắt buộc, VD: 241007XYZ trong mục Đơn Mua)"
+                            disabled={isOrderReported}
+                            className="flex-1 px-4 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono focus:ring-2 focus:ring-shopee-500 outline-none shadow-2xs"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleReportOrder}
+                            disabled={reportingOrder || isOrderReported}
+                            className="px-5 py-2.5 rounded-xl gradient-shopee text-white font-bold text-xs sm:text-sm shadow-sm hover:opacity-95 disabled:opacity-50 transition-all flex items-center justify-center gap-2 shrink-0"
+                          >
+                            {reportingOrder ? (
+                              <>
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                <span>Đang Gửi...</span>
+                              </>
+                            ) : isOrderReported ? (
+                              <>
+                                <Check className="w-4 h-4 text-white" />
+                                <span>Đã Gửi Admin</span>
+                              </>
+                            ) : (
+                              <>
+                                <Send className="w-4 h-4" />
+                                <span>Gửi Thông Tin Đã Mua</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+
+                        {isOrderReported ? (
+                          <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs flex items-start gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                            <div className="space-y-0.5">
+                              <p className="font-bold">Đã tiếp nhận thông tin đơn hàng thành công!</p>
+                              <p className="text-[11px] text-emerald-700 dark:text-emerald-400">
+                                Dữ liệu gồm hình ảnh, tên sản phẩm và mã Sub_ID: <strong>{convertedData.subId}</strong> đã được chuyển thẳng tới mục Quản trị. Admin sẽ so sánh đối soát hoa hồng từ Shopee và cộng tiền vào ví của bạn.
+                              </p>
+                            </div>
+                          </div>
+                        ) : (
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 italic">
+                            💡 Mẹo: Bạn có thể mở App Shopee &gt; vào <strong>Tôi &gt; Đơn Mua</strong> &gt; sao chép Mã đơn hàng dán vào đây để Admin đối soát nhanh nhất! (Nếu không nhập, hệ thống sẽ đối soát tự động theo mã Sub_ID của link).
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* Tips Mua Hàng Chuẩn Không Bị Mất Đơn */}

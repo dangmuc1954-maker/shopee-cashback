@@ -152,7 +152,7 @@ export async function PUT(req: Request) {
       return NextResponse.json({ success: false, message: 'Từ chối truy cập!' }, { status: 403 });
     }
 
-    const { orderId, status } = await req.json();
+    const { orderId, status, userCashback, totalAmount, shopeeCommission } = await req.json();
 
     if (!orderId || !status) {
       return NextResponse.json({ success: false, message: 'Thiếu thông tin cập nhật!' }, { status: 400 });
@@ -165,54 +165,65 @@ export async function PUT(req: Request) {
 
     const oldStatus = order.status;
     const newStatus = status;
+    const cashbackAmount = userCashback !== undefined && !isNaN(Number(userCashback))
+      ? Math.max(0, Number(userCashback))
+      : order.userCashback;
 
-    if (oldStatus === newStatus) {
-      return NextResponse.json({ success: true, message: 'Trạng thái không đổi' });
-    }
-
-    // Xử lý biến động số dư khi đổi trạng thái
+    // Xử lý biến động số dư khi đổi trạng thái hoặc duyệt đơn
     await prisma.$transaction(async (tx) => {
-      // 1. Cập nhật trạng thái đơn
+      // 1. Cập nhật trạng thái và số tiền đơn
       await tx.cashbackOrder.update({
         where: { id: orderId },
-        data: { status: newStatus },
+        data: {
+          status: newStatus,
+          userCashback: cashbackAmount,
+          totalAmount: totalAmount !== undefined ? Number(totalAmount) : order.totalAmount,
+          shopeeCommission: shopeeCommission !== undefined ? Number(shopeeCommission) : order.shopeeCommission,
+        },
       });
 
       if (order.userId) {
-        // Từ PENDING sang APPROVED -> Cộng số dư
+        // Từ PENDING sang APPROVED -> Cộng số dư vào ví
         if (oldStatus === 'PENDING' && newStatus === 'APPROVED') {
-          await tx.user.update({
-            where: { id: order.userId },
-            data: {
-              balance: { increment: order.userCashback },
-              pendingBalance: { decrement: order.userCashback },
-            },
-          });
+          if (cashbackAmount > 0) {
+            await tx.user.update({
+              where: { id: order.userId },
+              data: {
+                balance: { increment: cashbackAmount },
+              },
+            });
+          }
         }
         // Từ APPROVED sang REJECTED -> Trừ lại số dư đã cộng
         else if (oldStatus === 'APPROVED' && newStatus === 'REJECTED') {
-          await tx.user.update({
-            where: { id: order.userId },
-            data: {
-              balance: { decrement: order.userCashback },
-            },
-          });
+          if (order.userCashback > 0) {
+            await tx.user.update({
+              where: { id: order.userId },
+              data: {
+                balance: { decrement: order.userCashback },
+              },
+            });
+          }
         }
         // Từ REJECTED sang APPROVED -> Cộng lại tiền vào ví
         else if (oldStatus === 'REJECTED' && newStatus === 'APPROVED') {
-          await tx.user.update({
-            where: { id: order.userId },
-            data: {
-              balance: { increment: order.userCashback },
-            },
-          });
+          if (cashbackAmount > 0) {
+            await tx.user.update({
+              where: { id: order.userId },
+              data: {
+                balance: { increment: cashbackAmount },
+              },
+            });
+          }
         }
       }
     });
 
     return NextResponse.json({
       success: true,
-      message: 'Cập nhật trạng thái đơn hàng thành công!',
+      message: newStatus === 'APPROVED'
+        ? `Đã duyệt đơn hàng thành công và cộng ${cashbackAmount.toLocaleString('vi-VN')} đ vào ví khách!`
+        : 'Cập nhật trạng thái đơn hàng thành công!',
     });
   } catch (error: any) {
     return NextResponse.json(

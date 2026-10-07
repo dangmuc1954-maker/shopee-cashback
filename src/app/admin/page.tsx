@@ -332,10 +332,33 @@ export default function AdminDashboardPage() {
   // 4. Handle Update Order Status
   const handleUpdateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
+      let customCashback: number | undefined = undefined;
+
+      // Nếu Admin bấm Duyệt (APPROVED), hỗ trợ nhập/xác nhận số tiền hoàn cho khách
+      if (newStatus === 'APPROVED') {
+        const targetOrder = orders.find((o) => o.id === orderId);
+        const currentAmount = targetOrder?.userCashback || 0;
+        const inputAmount = prompt(
+          `Nhập số tiền hoàn (VNĐ) muốn cộng vào ví của khách cho đơn này:`,
+          currentAmount > 0 ? String(currentAmount) : '10000'
+        );
+        if (inputAmount === null) return; // Bấm Cancel thì dừng thao tác
+        const parsed = parseInt(inputAmount.replace(/\D/g, ''), 10);
+        if (isNaN(parsed) || parsed < 0) {
+          toast.error('Số tiền hoàn không hợp lệ!');
+          return;
+        }
+        customCashback = parsed;
+      }
+
       const res = await fetch('/api/admin/orders', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId, status: newStatus }),
+        body: JSON.stringify({
+          orderId,
+          status: newStatus,
+          userCashback: customCashback,
+        }),
       });
       const data = await res.json();
       if (data.success) {
@@ -993,15 +1016,53 @@ export default function AdminDashboardPage() {
                           </td>
                           <td className="py-3 px-4">
                             {o.user ? (
-                              <span className="font-semibold text-slate-800 dark:text-slate-200">
-                                {o.user.fullname || o.user.phone}
-                              </span>
+                              <div className="flex flex-col">
+                                <span className="font-semibold text-slate-800 dark:text-slate-200">
+                                  {o.user.fullname || 'Khách hàng'}
+                                </span>
+                                <span className="text-[11px] font-mono text-slate-500">
+                                  {o.user.phone}
+                                </span>
+                              </div>
                             ) : (
-                              <span className="text-slate-400 italic">Chưa khớp khách</span>
+                              <span className="text-slate-400 italic text-[11px]">Chưa khớp khách</span>
                             )}
                           </td>
-                          <td className="py-3 px-4 max-w-[180px] truncate text-slate-600 dark:text-slate-300" title={o.itemName || ''}>
-                            {o.itemName || 'Sản phẩm Shopee'}
+                          <td className="py-3 px-4 min-w-[200px] max-w-[280px]">
+                            <div className="flex items-center gap-2.5">
+                              {o.imageUrl ? (
+                                <img
+                                  src={o.imageUrl}
+                                  alt={o.itemName || ''}
+                                  className="w-10 h-10 rounded-lg object-cover border border-slate-200 dark:border-slate-700 shrink-0 bg-white"
+                                />
+                              ) : (
+                                <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 shrink-0 text-base">
+                                  🛍️
+                                </div>
+                              )}
+                              <div className="flex flex-col min-w-0">
+                                <span className="font-semibold text-slate-900 dark:text-white line-clamp-1 text-xs" title={o.itemName || ''}>
+                                  {o.itemName || 'Sản phẩm Shopee'}
+                                </span>
+                                {o.productUrl ? (
+                                  <a
+                                    href={o.productUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-[10px] text-shopee-500 hover:underline inline-flex items-center gap-1"
+                                  >
+                                    <span>Xem link gốc</span>
+                                    <ExternalLink className="w-2.5 h-2.5" />
+                                  </a>
+                                ) : null}
+                                {o.customerNote ? (
+                                  <span className="text-[10px] text-amber-600 dark:text-amber-400 italic truncate" title={o.customerNote}>
+                                    Ghi chú: {o.customerNote}
+                                  </span>
+                                ) : null}
+                              </div>
+                            </div>
                           </td>
                           <td className="py-3 px-4 text-right font-bold text-slate-900 dark:text-white">
                             {(o.shopeeCommission || 0).toLocaleString('vi-VN')} đ

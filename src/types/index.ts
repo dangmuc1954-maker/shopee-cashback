@@ -32,6 +32,9 @@ export interface CashbackOrderItem {
   orderSn: string;
   subId: string;
   itemName?: string | null;
+  imageUrl?: string | null;
+  productUrl?: string | null;
+  customerNote?: string | null;
   totalAmount: number;
   shopeeCommission: number;
   userCashback: number;

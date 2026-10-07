@@ -110,6 +110,7 @@ export async function POST(req: Request) {
           affiliateUrl: affiliateUrl,
           subId: subId,
           productTitle: productPreview?.title || null,
+          imageUrl: productPreview?.imageUrl || null,
           clicks: 0,
         },
       });

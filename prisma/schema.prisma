@@ -36,6 +36,7 @@ model ConvertedLink {
   affiliateUrl String
   subId        String    @unique
   productTitle String?
+  imageUrl     String?
   clicks       Int       @default(0)
   createdAt    DateTime  @default(now())
 }
@@ -47,10 +48,13 @@ model CashbackOrder {
   orderSn          String    @unique // Mã đơn hàng Shopee
   subId            String
   itemName         String?
+  imageUrl         String?   // Ảnh sản phẩm
+  productUrl       String?   // Link gốc sản phẩm
+  customerNote     String?   // Ghi chú của khách
   totalAmount      Float     @default(0) // Tổng tiền đơn hàng
   shopeeCommission Float     @default(0) // Tổng hoa hồng Shopee (100%)
-  userCashback     Float     @default(0) // Hoàn cho khách (60% hoa hồng)
-  adminProfit      Float     @default(0) // Lợi nhuận Admin (40% hoa hồng)
+  userCashback     Float     @default(0) // Hoàn cho khách (40% hoa hồng)
+  adminProfit      Float     @default(0) // Lợi nhuận Admin (60% hoa hồng)
   status           String    @default("PENDING") // "PENDING" | "APPROVED" | "REJECTED"
   orderTime        DateTime?
   completedAt      DateTime?
