@@ -36,3 +36,6 @@ next-env.d.ts
 *.exe
 cloudflared.exe
 
+
+.vercel
+.env*
