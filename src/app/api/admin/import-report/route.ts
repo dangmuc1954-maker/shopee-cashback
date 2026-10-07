@@ -142,13 +142,25 @@ export async function POST(req: Request) {
         }
       }
 
-      // Kiểm tra đơn hàng đã tồn tại chưa
-      const existingOrder = await prisma.cashbackOrder.findUnique({
+      // Kiểm tra đơn hàng đã tồn tại chưa: theo mã đơn Shopee hoặc theo Sub_ID khách đã báo mua
+      let existingOrder = await prisma.cashbackOrder.findUnique({
         where: { orderSn: cleanOrderSn },
       });
 
+      // Nếu chưa tìm thấy theo mã đơn, thử tìm đơn PENDING khớp mã Sub_ID khách đã tick báo mua
+      if (!existingOrder && subId) {
+        existingOrder = await prisma.cashbackOrder.findFirst({
+          where: {
+            subId: subId,
+            status: 'PENDING',
+          },
+        });
+      }
+
+      const finalUserId = matchedUserId || existingOrder?.userId;
+
       if (!existingOrder) {
-        // Tạo đơn hàng mới
+        // Tạo đơn hàng mới từ file Shopee
         await prisma.cashbackOrder.create({
           data: {
             orderSn: cleanOrderSn,
@@ -159,14 +171,14 @@ export async function POST(req: Request) {
             userCashback,
             adminProfit,
             status: normalizedStatus,
-            userId: matchedUserId,
+            userId: finalUserId,
           },
         });
 
-        // Nếu đơn thành công và tìm thấy user -> Cộng trực tiếp 60% vào ví user
-        if (normalizedStatus === 'APPROVED' && matchedUserId && userCashback > 0) {
+        // Nếu đơn thành công và tìm thấy user -> Cộng trực tiếp % vào ví user
+        if (normalizedStatus === 'APPROVED' && finalUserId && userCashback > 0) {
           await prisma.user.update({
-            where: { id: matchedUserId },
+            where: { id: finalUserId },
             data: {
               balance: { increment: userCashback },
             },
@@ -177,26 +189,29 @@ export async function POST(req: Request) {
 
         newOrdersCount++;
       } else {
-        // Nếu đơn đã tồn tại nhưng trước đó là PENDING nay chuyển sang APPROVED
-        if (existingOrder.status === 'PENDING' && normalizedStatus === 'APPROVED' && existingOrder.userId) {
+        // Đơn đã tồn tại (do khách đã tick báo mua trước đó)
+        // và nay trong file Excel Shopee xác nhận thành công (APPROVED):
+        if (existingOrder.status === 'PENDING' && normalizedStatus === 'APPROVED' && finalUserId && userCashback > 0) {
           await prisma.user.update({
-            where: { id: existingOrder.userId },
+            where: { id: finalUserId },
             data: {
-              balance: { increment: existingOrder.userCashback },
-              pendingBalance: { decrement: existingOrder.userCashback },
+              balance: { increment: userCashback },
             },
           });
-          totalCashbackCredited += existingOrder.userCashback;
+          totalCashbackCredited += userCashback;
+          matchedUserCount++;
         }
 
         await prisma.cashbackOrder.update({
-          where: { orderSn: cleanOrderSn },
+          where: { id: existingOrder.id },
           data: {
+            orderSn: cleanOrderSn, // Cập nhật mã đơn thật từ Shopee
             status: normalizedStatus,
+            totalAmount: totalAmount || existingOrder.totalAmount,
             shopeeCommission,
             userCashback,
             adminProfit,
-            userId: matchedUserId || existingOrder.userId,
+            userId: finalUserId,
           },
         });
       }
