@@ -80,6 +80,9 @@ export async function POST(req: Request) {
         phone: user.phone,
         fullname: user.fullname,
         role: user.role,
+        balance: user.balance ?? 0,
+        pendingBalance: user.pendingBalance ?? 0,
+        totalWithdrawn: user.totalWithdrawn ?? 0,
       },
     });
   } catch (error: any) {

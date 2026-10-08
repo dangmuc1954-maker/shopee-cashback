@@ -189,7 +189,7 @@ export default function DashboardPage() {
               Số Dư Khả Dụng (Rút Được)
             </div>
             <div className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 mt-1">
-              {user.balance.toLocaleString('vi-VN')} đ
+              {(user.balance ?? 0).toLocaleString('vi-VN')} đ
             </div>
           </div>
           <button
@@ -211,7 +211,7 @@ export default function DashboardPage() {
               Chờ Shopee Đối Soát
             </div>
             <div className="text-2xl sm:text-3xl font-black text-amber-600 dark:text-amber-400 mt-1">
-              {user.pendingBalance.toLocaleString('vi-VN')} đ
+              {(user.pendingBalance ?? 0).toLocaleString('vi-VN')} đ
             </div>
           </div>
           <p className="text-[11px] text-slate-400">
@@ -229,7 +229,7 @@ export default function DashboardPage() {
               Tổng Tiền Đã Rút Thành Công
             </div>
             <div className="text-2xl sm:text-3xl font-black text-indigo-600 dark:text-indigo-400 mt-1">
-              {user.totalWithdrawn.toLocaleString('vi-VN')} đ
+              {(user.totalWithdrawn ?? 0).toLocaleString('vi-VN')} đ
             </div>
           </div>
           <p className="text-[11px] text-slate-400">

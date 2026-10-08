@@ -195,7 +195,10 @@ export default function HomePage() {
       }
 
       if (data.success && data.data) {
-        setConvertedData(data.data);
+        setConvertedData({
+          ...data.data,
+          isLoggedIn: true,
+        });
         setIsPurchasedConfirmed(false);
         setOrderCodeInput('');
         setIsOrderReported(false);
@@ -253,17 +256,24 @@ export default function HomePage() {
       const data = await res.json();
 
       if (data.success && data.user) {
-        setCurrentUser(data.user);
+        const fullUser = {
+          ...data.user,
+          balance: data.user.balance ?? 0,
+          pendingBalance: data.user.pendingBalance ?? 0,
+          totalWithdrawn: data.user.totalWithdrawn ?? 0,
+        };
+        setCurrentUser(fullUser);
         if (typeof window !== 'undefined') {
-          localStorage.setItem('shopee_user_session', JSON.stringify(data.user));
+          localStorage.setItem('shopee_user_session', JSON.stringify(fullUser));
+          window.dispatchEvent(new CustomEvent('auth-change', { detail: fullUser }));
         }
         setShowAuthModal(false);
-        toast.success(modalTab === 'register' ? 'Đăng ký thành công! Đang tự động tạo link hoàn tiền...' : 'Đăng nhập thành công! Đang tạo link...');
+        toast.success(modalTab === 'register' ? 'Đăng ký thành công! Đã tự động kích hoạt tài khoản.' : 'Đăng nhập thành công!');
         
         // Tự động chuyển đổi link ngay lập tức cho khách!
         setTimeout(() => {
-          handleConvert(undefined, data.user);
-        }, 150);
+          handleConvert(undefined, fullUser);
+        }, 100);
       } else {
         toast.error(data.message || (modalTab === 'register' ? 'Đăng ký thất bại!' : 'Đăng nhập thất bại!'));
       }
@@ -607,17 +617,36 @@ export default function HomePage() {
                     </ul>
                   </div>
 
-                  {!convertedData.isLoggedIn && (
+                  {currentUser ? (
+                    <div className="flex items-center justify-between p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs">
+                      <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300 font-medium">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                        <span>
+                          Đã tự động liên kết tài khoản: <strong>{currentUser.fullname || currentUser.phone}</strong> (Hoa hồng 60% sẽ tự động cộng vào ví sau khi nhận hàng)
+                        </span>
+                      </div>
+                      <Link
+                        href="/dashboard"
+                        className="px-3 py-1 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 transition-colors shrink-0 ml-2"
+                      >
+                        Xem Ví
+                      </Link>
+                    </div>
+                  ) : !convertedData.isLoggedIn && (
                     <div className="flex items-center justify-between p-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-xs">
                       <span className="text-indigo-800 dark:text-indigo-300 font-medium">
                         Bạn chưa đăng nhập? Đăng ký ngay để lưu số dư hoàn tiền về tài khoản!
                       </span>
-                      <Link
-                        href="/register"
-                        className="px-3 py-1 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition-colors shrink-0 ml-2"
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setModalTab('register');
+                          setShowAuthModal(true);
+                        }}
+                        className="px-3 py-1 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition-colors shrink-0 ml-2 cursor-pointer"
                       >
                         Đăng Ký
-                      </Link>
+                      </button>
                     </div>
                   )}
                 </div>

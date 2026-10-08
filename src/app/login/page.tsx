@@ -29,7 +29,14 @@ export default function LoginPage() {
       const data = await res.json();
       if (data.success) {
         if (typeof window !== 'undefined' && data.user) {
-          localStorage.setItem('shopee_user_session', JSON.stringify(data.user));
+          const fullUser = {
+            ...data.user,
+            balance: data.user.balance ?? 0,
+            pendingBalance: data.user.pendingBalance ?? 0,
+            totalWithdrawn: data.user.totalWithdrawn ?? 0,
+          };
+          localStorage.setItem('shopee_user_session', JSON.stringify(fullUser));
+          window.dispatchEvent(new CustomEvent('auth-change', { detail: fullUser }));
         }
         toast.success('Đăng nhập thành công!');
         if (data.user?.role === 'ADMIN') {

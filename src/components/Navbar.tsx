@@ -29,12 +29,34 @@ export default function Navbar() {
       if (cached) {
         const parsed = JSON.parse(cached);
         if (parsed && parsed.phone) {
-          setUser(parsed);
+          setUser({
+            ...parsed,
+            balance: parsed.balance ?? 0,
+            pendingBalance: parsed.pendingBalance ?? 0,
+            totalWithdrawn: parsed.totalWithdrawn ?? 0,
+          });
           setLoading(false);
         }
       }
     } catch {}
     fetchCurrentUser();
+
+    const handleAuthChange = (e: any) => {
+      if (e.detail) {
+        setUser({
+          ...e.detail,
+          balance: e.detail.balance ?? 0,
+          pendingBalance: e.detail.pendingBalance ?? 0,
+          totalWithdrawn: e.detail.totalWithdrawn ?? 0,
+        });
+        setLoading(false);
+      } else {
+        fetchCurrentUser();
+      }
+    };
+
+    window.addEventListener('auth-change', handleAuthChange);
+    return () => window.removeEventListener('auth-change', handleAuthChange);
   }, [pathname]);
 
   const fetchCurrentUser = async () => {
@@ -140,7 +162,7 @@ export default function Navbar() {
                       Ví của bạn
                     </span>
                     <span className="text-xs font-bold text-shopee-600 dark:text-shopee-400 group-hover:text-shopee-500">
-                      {user.balance.toLocaleString('vi-VN')} đ
+                      {(user.balance ?? 0).toLocaleString('vi-VN')} đ
                     </span>
                   </div>
                 </Link>
@@ -190,7 +212,7 @@ export default function Navbar() {
                 className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-orange-50 dark:bg-slate-800 border border-orange-200 text-xs font-bold text-shopee-600"
               >
                 <Wallet className="w-3 h-3" />
-                {user.balance.toLocaleString('vi-VN')}đ
+                {(user.balance ?? 0).toLocaleString('vi-VN')}đ
               </Link>
             )}
             <button
@@ -237,7 +259,7 @@ export default function Navbar() {
                 className="flex items-center justify-between px-3 py-2 rounded-lg bg-orange-50 dark:bg-slate-800 font-semibold text-shopee-600"
               >
                 <span>Ví Của Tôi:</span>
-                <span>{user.balance.toLocaleString('vi-VN')} VNĐ</span>
+                <span>{(user.balance ?? 0).toLocaleString('vi-VN')} VNĐ</span>
               </Link>
               <button
                 onClick={() => {
