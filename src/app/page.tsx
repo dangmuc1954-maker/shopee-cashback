@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { 
   ArrowRight, 
@@ -22,9 +22,42 @@ import {
   UserPlus,
   LogIn,
   Send,
-  X
+  X,
+  Play,
+  Video,
+  Maximize2,
+  Clock,
+  ShieldCheck
 } from 'lucide-react';
 import { toast } from 'sonner';
+
+// Helper lấy link embed video linh hoạt (YouTube, Google Drive, direct MP4)
+function getEmbedVideoUrl(url: string): string {
+  if (!url) return '';
+  const trimmed = url.trim();
+  try {
+    if (trimmed.includes('youtube.com/watch')) {
+      const u = new URL(trimmed);
+      const videoId = u.searchParams.get('v');
+      return videoId ? `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1` : trimmed;
+    }
+    if (trimmed.includes('youtu.be/')) {
+      const videoId = trimmed.split('youtu.be/')[1]?.split('?')[0]?.split('/')[0];
+      return videoId ? `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1` : trimmed;
+    }
+    if (trimmed.includes('youtube.com/shorts/')) {
+      const videoId = trimmed.split('youtube.com/shorts/')[1]?.split('?')[0]?.split('/')[0];
+      return videoId ? `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1` : trimmed;
+    }
+    if (trimmed.includes('drive.google.com/file/d/')) {
+      const match = trimmed.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+      return match ? `https://drive.google.com/file/d/${match[1]}/preview` : trimmed;
+    }
+  } catch {
+    return trimmed;
+  }
+  return trimmed;
+}
 
 export default function HomePage() {
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -64,6 +97,19 @@ export default function HomePage() {
   const [orderCodeInput, setOrderCodeInput] = useState('');
   const [reportingOrder, setReportingOrder] = useState(false);
   const [isOrderReported, setIsOrderReported] = useState(false);
+
+  // Link video hướng dẫn sử dụng (YouTube / MP4 / Drive / TikTok)
+  const [tutorialVideoUrl, setTutorialVideoUrl] = useState<string>('/video-huong-dan-web.mp4');
+  const [activeChapter, setActiveChapter] = useState(0);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const handleSeekVideo = (seconds: number, index: number) => {
+    setActiveChapter(index);
+    if (videoRef.current) {
+      videoRef.current.currentTime = seconds;
+      videoRef.current.play().catch(() => {});
+    }
+  };
 
   // Kiểm tra trạng thái đăng nhập khi vào trang chủ & khôi phục link chưa chuyển đổi
   useEffect(() => {
@@ -235,7 +281,7 @@ export default function HomePage() {
 
           {/* Subtitle */}
           <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Dán link sản phẩm Shopee bất kỳ để tạo link hoàn tiền. Tự động tích lũy tiền mặt vào ví và rút về tài khoản ngân hàng khi đủ <strong>50.000 VNĐ</strong>!
+            Dán link sản phẩm Shopee bất kỳ để tạo link hoàn tiền. Tự động tích lũy tiền mặt vào ví và rút về tài khoản ngân hàng khi đủ <strong>20.000 VNĐ</strong>!
           </p>
 
           {/* TOOL BOX */}
@@ -497,7 +543,185 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. CÁCH HOẠT ĐỘNG (3 BƯỚC ĐƠN GIẢN) */}
+      {/* 2. VIDEO HƯỚNG DẪN SỬ DỤNG - KHUNG KHỔ GỐC CHUẨN XÁC 100% */}
+      <section id="video-huong-dan" className="max-w-4xl mx-auto px-4 sm:px-6 relative">
+        {/* Glow ambient background effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-orange-500/15 via-amber-500/10 to-rose-500/15 rounded-3xl blur-3xl -z-10 pointer-events-none" />
+
+        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-3xl border border-orange-200/80 dark:border-slate-800 p-6 sm:p-10 shadow-2xl relative overflow-hidden">
+          
+          {/* Header section */}
+          <div className="flex flex-col items-center text-center space-y-3 mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-orange-500/15 to-amber-500/15 border border-orange-300/40 dark:border-orange-500/30 text-shopee-600 dark:text-shopee-400 text-xs font-extrabold uppercase tracking-wider shadow-xs">
+              <Video className="w-4 h-4 text-shopee-500" />
+              <span>Video Hướng Dẫn Thực Hành (1 Phút)</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+            </div>
+
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+              Xem Video Cách Nhận Hoàn Tiền Từng Bước
+            </h2>
+
+            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-xl leading-relaxed">
+              Video quay thao tác thực tế: Copy link Shopee ➔ Dán chuyển đổi ➔ Mua hàng và tiền hoàn tự động cộng vào ví!
+            </p>
+          </div>
+
+          {/* Native Aspect Ratio Video Player Container - KHUNG KHỔ GỐC CHUẨN XÁC 100%, KHÔNG BO TRÒN CẮT MẤT GÓC */}
+          <div className="max-w-[560px] mx-auto">
+            {/* Khung video vuông góc chuẩn 100% video gốc, tuyệt đối không bo góc làm mất nội dung */}
+            <div className="relative shadow-2xl border-2 border-slate-800 dark:border-slate-700 bg-black">
+              {tutorialVideoUrl ? (
+                tutorialVideoUrl.endsWith('.mp4') || tutorialVideoUrl.endsWith('.webm') || tutorialVideoUrl.startsWith('/') ? (
+                  <video
+                    ref={videoRef}
+                    src={tutorialVideoUrl}
+                    controls
+                    playsInline
+                    preload="metadata"
+                    poster="/video-poster.jpg"
+                    className="w-full h-auto block bg-black"
+                    style={{ aspectRatio: '2160 / 3056' }}
+                  >
+                    Trình duyệt của bạn không hỗ trợ phát thẻ video.
+                  </video>
+                ) : (
+                  <iframe
+                    src={getEmbedVideoUrl(tutorialVideoUrl)}
+                    title="Video hướng dẫn hoàn tiền Shopee"
+                    className="w-full aspect-video border-0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                )
+              ) : (
+                <div className="aspect-[2160/3056] w-full flex flex-col items-center justify-center p-6 text-center bg-slate-950 text-white">
+                  <Play className="w-12 h-12 text-shopee-500 mb-3" />
+                  <p className="text-sm font-bold">Chưa có video hướng dẫn</p>
+                </div>
+              )}
+            </div>
+
+            {/* Video Badges & Nút Phóng Toàn Màn Hình */}
+            <div className="flex flex-wrap items-center justify-between gap-2 mt-3 px-1 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+              <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
+                <ShieldCheck className="w-3.5 h-3.5" /> Chuẩn Khung Khổ Gốc (Giữ 100% 4 Góc)
+              </span>
+              <div className="flex items-center gap-2.5">
+                <span className="flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5 text-amber-500" /> Thời lượng: 01:02
+                </span>
+                <span className="font-semibold text-shopee-500">Rút từ 20K</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (videoRef.current) {
+                      if (videoRef.current.requestFullscreen) {
+                        videoRef.current.requestFullscreen();
+                      } else if ((videoRef.current as any).webkitRequestFullscreen) {
+                        (videoRef.current as any).webkitRequestFullscreen();
+                      }
+                    }
+                  }}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-[11px] font-bold text-slate-700 dark:text-slate-200 transition-colors"
+                  title="Xem toàn màn hình"
+                >
+                  <Maximize2 className="w-3 h-3 text-shopee-500" /> Phóng To
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Timeline 4 Bước Tóm Tắt (Bấm vào để nhảy đến đoạn video tương ứng) */}
+          <div className="mt-8 max-w-3xl mx-auto bg-slate-50 dark:bg-slate-850 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between mb-3 text-xs font-bold text-slate-700 dark:text-slate-300">
+              <span className="flex items-center gap-2">
+                <Clock className="w-4 h-4 text-shopee-500" />
+                Các Bước Thao Tác (Bấm Để Xem Từng Đoạn):
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
+              {[
+                {
+                  seconds: 0,
+                  time: '00:00 - 00:18',
+                  title: '1. Giao Diện & Số Dư Ví',
+                  desc: 'Xem ví tiền hoàn, trạng thái chờ đối soát và lịch sử rút tiền',
+                  color: 'text-orange-500 bg-orange-50 dark:bg-orange-950/40 border-orange-200 dark:border-orange-900',
+                },
+                {
+                  seconds: 18,
+                  time: '00:18 - 00:36',
+                  title: '2. Sao Chép Link Shopee',
+                  desc: 'Mở app Shopee > Vào sản phẩm cần mua > Bấm nút Chia sẻ và Sao chép link',
+                  color: 'text-amber-500 bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-900',
+                },
+                {
+                  seconds: 36,
+                  time: '00:36 - 00:50',
+                  title: '3. Dán Link Chuyển Đổi',
+                  desc: 'Dán link vào ô công cụ trên web > Bấm "Lấy Link Hoàn Tiền"',
+                  color: 'text-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-900',
+                },
+                {
+                  seconds: 52,
+                  time: '00:52 - 01:02',
+                  title: '4. Mua Hàng & Rút Tiền',
+                  desc: 'Bấm Mở Shopee Mua Ngay > Hoàn tất đơn hàng > Tiền về ví rút từ 20K',
+                  color: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-900',
+                },
+              ].map((chap, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => handleSeekVideo(chap.seconds, idx)}
+                  className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                    activeChapter === idx
+                      ? 'ring-2 ring-shopee-500 shadow-sm ' + chap.color
+                      : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="flex items-center justify-between text-[11px] font-bold mb-1">
+                    <span className="text-slate-900 dark:text-white">{chap.title}</span>
+                    <span className="font-mono text-[10px] text-slate-500 dark:text-slate-400">{chap.time}</span>
+                  </div>
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-snug">
+                    {chap.desc}
+                  </p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick Action Buttons Below Video */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 mt-6">
+            <a
+              href="#top"
+              onClick={(e) => {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                const inputEl = document.querySelector('input[type="text"]') as HTMLInputElement;
+                if (inputEl) inputEl.focus();
+              }}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl gradient-shopee text-white font-bold text-sm shadow-md hover:shadow-lg hover:opacity-95 active:scale-98 transition-all"
+            >
+              <span>Thực Hành Dán Link Ngay Bây Giờ</span>
+              <ArrowRight className="w-4 h-4" />
+            </a>
+
+            <a
+              href="#cach-hoat-dong"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-sm transition-all"
+            >
+              <span>Xem Quy Trình 3 Bước Chi Tiết</span>
+            </a>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 3. CÁCH HOẠT ĐỘNG (3 BƯỚC ĐƠN GIẢN) */}
       <section id="cach-hoat-dong" className="max-w-5xl mx-auto px-4 sm:px-6">
         <div className="text-center space-y-3 mb-12">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
@@ -545,7 +769,7 @@ export default function HomePage() {
               Nhận Tiền & Rút Về STK
             </h3>
             <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              Sau khi bạn nhận hàng thành công, tiền hoàn sẽ tự động được cộng vào ví của bạn. Đủ 50k là rút thẳng về ngân hàng!
+              Sau khi bạn nhận hàng thành công, tiền hoàn sẽ tự động được cộng vào ví của bạn. Đủ 20k là rút thẳng về ngân hàng!
             </p>
           </div>
 
@@ -571,7 +795,7 @@ export default function HomePage() {
             },
             {
               q: 'Bao nhiêu tiền thì tôi có thể rút về tài khoản ngân hàng?',
-              a: 'Hạn mức rút tiền tối thiểu là 50.000 VNĐ. Bạn có thể rút về bất kỳ tài khoản ngân hàng nào tại Việt Nam (MBBank, Vietcombank, Techcombank, VPBank, MoMo,...).',
+              a: 'Hạn mức rút tiền tối thiểu là 20.000 VNĐ. Bạn có thể rút về bất kỳ tài khoản ngân hàng nào tại Việt Nam (MBBank, Vietcombank, Techcombank, VPBank, MoMo,...).',
             },
             {
               q: 'Tôi có được áp mã giảm giá, voucher Shopee khi mua không?',
@@ -664,7 +888,7 @@ export default function HomePage() {
               </div>
               <div className="flex items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300 font-medium">
                 <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                <span>Rút tiền mặt 24/7 về thẻ ATM ngân hàng từ <strong>50.000 VNĐ</strong></span>
+                <span>Rút tiền mặt 24/7 về thẻ ATM ngân hàng từ <strong>20.000 VNĐ</strong></span>
               </div>
               <div className="flex items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300 font-medium">
                 <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />

@@ -53,3 +53,9 @@ export const prisma =
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
+// Kích hoạt tự động bảo vệ & khôi phục số dư ví khách nếu môi trường serverless vừa khởi động
+if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+  import('./db-sync')
+    .then((m) => m.autoRestoreSnapshotIfNeeded())
+    .catch(() => {});
+}

@@ -43,7 +43,9 @@ export interface CashbackOrderItem {
   orderTime?: string | null;
   completedAt?: string | null;
   createdAt: string;
+  userId?: string | null;
   user?: {
+    id?: string;
     fullname?: string | null;
     phone: string;
   } | null;

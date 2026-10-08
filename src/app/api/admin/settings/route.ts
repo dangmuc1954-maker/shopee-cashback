@@ -14,7 +14,7 @@ export async function GET() {
         shopeeAffId: '17352020564',
         commissionUserPercent: 40,
         commissionAdminPercent: 60,
-        minWithdrawAmount: 50000,
+        minWithdrawAmount: 20000,
         announcement: '',
       },
     });
@@ -61,7 +61,7 @@ export async function PUT(req: Request) {
         shopeeAppSecret: shopeeAppSecret ? String(shopeeAppSecret).trim() : null,
         commissionUserPercent: Number(commissionUserPercent || 40),
         commissionAdminPercent: Number(commissionAdminPercent || 60),
-        minWithdrawAmount: Number(minWithdrawAmount || 50000),
+        minWithdrawAmount: Number(minWithdrawAmount || 20000),
         announcement: String(announcement || ''),
       },
     });

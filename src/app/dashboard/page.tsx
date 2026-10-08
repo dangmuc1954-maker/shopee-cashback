@@ -35,7 +35,7 @@ export default function DashboardPage() {
 
   // Modal Rút tiền
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
-  const [withdrawAmount, setWithdrawAmount] = useState<number | string>(50000);
+  const [withdrawAmount, setWithdrawAmount] = useState<number | string>(20000);
   const [selectedBank, setSelectedBank] = useState('MB');
   const [bankAccountNo, setBankAccountNo] = useState('');
   const [bankAccountName, setBankAccountName] = useState('');
@@ -84,8 +84,8 @@ export default function DashboardPage() {
     e.preventDefault();
     const amount = Number(withdrawAmount);
 
-    if (!amount || amount < 50000) {
-      toast.error('Số tiền rút tối thiểu là 50.000 VNĐ!');
+    if (!amount || amount < 20000) {
+      toast.error('Số tiền rút tối thiểu là 20.000 VNĐ!');
       return;
     }
 
@@ -362,7 +362,7 @@ export default function DashboardPage() {
                     Chưa có yêu cầu rút tiền nào
                   </p>
                   <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                    Khi số dư khả dụng đạt từ 50.000 VNĐ, bạn có thể tạo lệnh rút tiền về tài khoản ngân hàng.
+                    Khi số dư khả dụng đạt từ 20.000 VNĐ, bạn có thể tạo lệnh rút tiền về tài khoản ngân hàng.
                   </p>
                 </div>
               ) : (
@@ -558,22 +558,22 @@ export default function DashboardPage() {
               {/* Số Tiền Rút */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                  Số Tiền Muốn Rút (Tối thiểu 50.000 VNĐ):
+                  Số Tiền Muốn Rút (Tối thiểu 20.000 VNĐ):
                 </label>
                 <input
                   type="number"
-                  min={50000}
+                  min={20000}
                   step={10000}
                   value={withdrawAmount}
                   onChange={(e) => setWithdrawAmount(e.target.value)}
-                  placeholder="50000"
+                  placeholder="20000"
                   required
                   className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-bold focus:ring-2 focus:ring-shopee-500 focus:outline-none"
                 />
 
                 {/* Preset buttons */}
                 <div className="flex gap-2 mt-2">
-                  {[50000, 100000, 200000, 500000].map((preset) => (
+                  {[20000, 50000, 100000, 200000, 500000].map((preset) => (
                     <button
                       key={preset}
                       type="button"

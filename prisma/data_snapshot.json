@@ -1,0 +1,123 @@
+{
+  "savedAt": "2026-10-08T06:01:59.019Z",
+  "users": [
+    {
+      "id": "cmt2d6hvl000313h0iv5sytif",
+      "phone": "0395957039",
+      "email": null,
+      "password": "$2a$10$hNCwgakVi00hjZ3fAW1DKuho6cV5W6uZWemK.APHX7XvZ2AebO46K",
+      "fullname": "Hà",
+      "role": "ADMIN",
+      "balance": 10000,
+      "pendingBalance": 0,
+      "totalWithdrawn": 0,
+      "bankName": null,
+      "bankAccountNo": null,
+      "bankAccountName": null,
+      "createdAt": "2026-08-21T03:02:48.322Z",
+      "updatedAt": "2026-10-08T06:01:59.016Z"
+    },
+    {
+      "id": "cmt2fuagz001713h0gczfospz",
+      "phone": "0386213036",
+      "email": null,
+      "password": "$2a$10$/JFLFXSevKlx0FsQrN09Z.VkE497Usm8jsTCg5NQrxtgiC6hfs13u",
+      "fullname": "Tuyết Nga",
+      "role": "USER",
+      "balance": 18000,
+      "pendingBalance": 0,
+      "totalWithdrawn": 0,
+      "bankName": null,
+      "bankAccountNo": null,
+      "bankAccountName": null,
+      "createdAt": "2026-08-21T04:17:17.700Z",
+      "updatedAt": "2026-10-08T06:01:59.011Z"
+    }
+  ],
+  "links": [
+    {
+      "id": "cmt2fnyj2001613h08tn7n8qk",
+      "userId": null,
+      "originalUrl": "https://shopee.vn/product/123456/789101",
+      "affiliateUrl": "https://shopee.vn/product/123456/789101?aff_sid=GUEST_y8ecq&aff_sub=GUEST_y8ecq&utm_source=an_17352020564&utm_medium=affiliates&utm_campaign=an_17352020564&affiliate_id=17352020564",
+      "subId": "GUEST_y8ecq",
+      "productTitle": null,
+      "imageUrl": null,
+      "clicks": 0,
+      "createdAt": "2026-08-21T04:12:22.287Z"
+    },
+    {
+      "id": "cmt2rb18a0001chvt412p5yq3",
+      "userId": null,
+      "originalUrl": "https://shopee.vn/product/573955617/12345678",
+      "affiliateUrl": "https://s.shopee.vn/an_redir?origin_link=https%3A%2F%2Fshopee.vn%2Fproduct%2F573955617%2F12345678&affiliate_id=17352020564&sub_id=GUEST3fad",
+      "subId": "GUEST3fad",
+      "productTitle": null,
+      "imageUrl": null,
+      "clicks": 0,
+      "createdAt": "2026-08-21T09:38:14.649Z"
+    },
+    {
+      "id": "cmt2re27k0003chvt5995w8hd",
+      "userId": "cmt2fuagz001713h0gczfospz",
+      "originalUrl": "https://shopee.vn/-FS-S%E1%BB%AFa-r%E1%BB%ADa-m%E1%BA%B7t-sen-H%E1%BA%ADu-Giang-Cocoon-310ml-T%E1%BA%B7ng-1-N%C6%B0%E1%BB%9Bc-sen-H%E1%BA%ADu-Giang-50ml-1-N%C6%B0%E1%BB%9Bc-t%E1%BA%A9y-trang-sen-H%E1%BA%ADu-Giang-50ml-i.175753395.48300291997",
+      "affiliateUrl": "https://s.shopee.vn/an_redir?origin_link=https%3A%2F%2Fshopee.vn%2F-FS-S%25E1%25BB%25AFa-r%25E1%25BB%25ADa-m%25E1%25BA%25B7t-sen-H%25E1%25BA%25ADu-Giang-Cocoon-310ml-T%25E1%25BA%25B7ng-1-N%25C6%25B0%25E1%25BB%259Bc-sen-H%25E1%25BA%25ADu-Giang-50ml-1-N%25C6%25B0%25E1%25BB%259Bc-t%25E1%25BA%25A9y-trang-sen-H%25E1%25BA%25ADu-Giang-50ml-i.175753395.48300291997&affiliate_id=17352020564&sub_id=cmt2fuagjzx9",
+      "subId": "cmt2fuagjzx9",
+      "productTitle": null,
+      "imageUrl": null,
+      "clicks": 1,
+      "createdAt": "2026-08-21T09:40:35.889Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": "cmuz4m6zk0001n3xlxe2iyc50",
+      "userId": "cmt2fuagz001713h0gczfospz",
+      "orderSn": "SP_TEST_TUYETNGA_18K",
+      "subId": "cmt2fuagjzx9",
+      "itemName": "Đơn hàng hoàn tiền Shopee (Tuyết Nga)",
+      "imageUrl": null,
+      "productUrl": null,
+      "customerNote": null,
+      "totalAmount": 150000,
+      "shopeeCommission": 30000,
+      "userCashback": 18000,
+      "adminProfit": 12000,
+      "status": "APPROVED",
+      "orderTime": null,
+      "completedAt": "2026-10-08T05:59:10.302Z",
+      "createdAt": "2026-10-08T05:59:10.304Z"
+    },
+    {
+      "id": "cmuz4m6zq0003n3xly115k8i0",
+      "userId": "cmt2d6hvl000313h0iv5sytif",
+      "orderSn": "SP_TEST_HA_10K",
+      "subId": "cmt2d6hv10k",
+      "itemName": "Đơn hàng hoàn tiền Shopee (Hà)",
+      "imageUrl": null,
+      "productUrl": null,
+      "customerNote": null,
+      "totalAmount": 85000,
+      "shopeeCommission": 16667,
+      "userCashback": 10000,
+      "adminProfit": 6667,
+      "status": "APPROVED",
+      "orderTime": null,
+      "completedAt": "2026-10-08T05:59:10.309Z",
+      "createdAt": "2026-10-08T05:59:10.310Z"
+    }
+  ],
+  "withdrawals": [],
+  "settings": {
+    "id": "DEFAULT",
+    "shopeeAffId": "17352020564",
+    "shopeeAppId": null,
+    "shopeeAppSecret": null,
+    "commissionUserPercent": 60,
+    "commissionAdminPercent": 40,
+    "minWithdrawAmount": 20000,
+    "announcement": "🔥 Siêu Hoàn Tiền Shopee 40% Hoa Hồng - Mua sắm thông minh, tích lũy rút tiền mặt không giới hạn!",
+    "telegramChatId": null,
+    "updatedAt": "2026-10-08T05:32:34.026Z"
+  }
+}

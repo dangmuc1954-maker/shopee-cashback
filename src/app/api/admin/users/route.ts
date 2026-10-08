@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getCurrentAdmin } from '@/lib/auth';
+import { saveDbSnapshot } from '@/lib/db-sync';
 
 export async function GET(req: Request) {
   try {
@@ -80,6 +81,8 @@ export async function PUT(req: Request) {
         ...(pendingBalance !== undefined ? { pendingBalance: Number(pendingBalance) } : {}),
       },
     });
+
+    saveDbSnapshot().catch(() => {});
 
     return NextResponse.json({
       success: true,

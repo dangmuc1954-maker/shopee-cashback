@@ -88,6 +88,12 @@ export default function Navbar() {
               Chuyển Đổi Link
             </Link>
             <Link 
+              href="/#video-huong-dan" 
+              className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-shopee-500 transition-colors"
+            >
+              Video Hướng Dẫn
+            </Link>
+            <Link 
               href="/#cach-hoat-dong" 
               className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-shopee-500 transition-colors"
             >
@@ -193,6 +199,13 @@ export default function Navbar() {
             className="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
           >
             Chuyển Đổi Link
+          </Link>
+          <Link
+            href="/#video-huong-dan"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+          >
+            Video Hướng Dẫn
           </Link>
           <Link
             href="/#cach-hoat-dong"

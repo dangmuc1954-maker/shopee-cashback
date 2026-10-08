@@ -72,7 +72,7 @@ export async function POST(req: Request) {
           shopeeAppSecret: settings.shopeeAppSecret || null,
           commissionUserPercent: settings.commissionUserPercent || 60,
           commissionAdminPercent: settings.commissionAdminPercent || 40,
-          minWithdrawAmount: settings.minWithdrawAmount || 50000,
+          minWithdrawAmount: settings.minWithdrawAmount || 20000,
           announcement: settings.announcement || '',
         },
       });

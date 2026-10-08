@@ -10,7 +10,7 @@ async function main() {
       shopeeAffId: '17352020564',
       commissionUserPercent: 60,
       commissionAdminPercent: 40,
-      minWithdrawAmount: 50000,
+      minWithdrawAmount: 20000,
       announcement: 'Siêu Hoàn Tiền Shopee 60% Hoa Hồng - Mua sắm thông minh, tích lũy rút tiền mặt không giới hạn!',
     },
   });

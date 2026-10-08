@@ -64,7 +64,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <RefreshCw className="w-4 h-4 text-emerald-400" />
-                <span>Rút tiền nhanh từ 50.000 VNĐ</span>
+                <span>Rút tiền nhanh từ 20.000 VNĐ</span>
               </li>
               <li className="flex items-center gap-2">
                 <Shield className="w-4 h-4 text-indigo-400" />

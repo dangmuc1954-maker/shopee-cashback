@@ -62,7 +62,7 @@ export default function AdminDashboardPage() {
     shopeeAppSecret: '',
     commissionUserPercent: 60,
     commissionAdminPercent: 40,
-    minWithdrawAmount: 50000,
+    minWithdrawAmount: 20000,
     announcement: '',
   });
 
@@ -93,9 +93,11 @@ export default function AdminDashboardPage() {
   const [manualOrder, setManualOrder] = useState({
     orderSn: '',
     subId: '',
+    userId: '',
     itemName: '',
     totalAmount: 500000,
     shopeeCommission: 50000,
+    customCashbackInput: '',
     status: 'APPROVED',
   });
   const [addingOrder, setAddingOrder] = useState(false);
@@ -318,18 +320,23 @@ export default function AdminDashboardPage() {
       const res = await fetch('/api/admin/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(manualOrder),
+        body: JSON.stringify({
+          ...manualOrder,
+          userCashback: manualOrder.customCashbackInput ? Number(manualOrder.customCashbackInput) : undefined,
+        }),
       });
       const data = await res.json();
       if (data.success) {
-        toast.success('Thêm đơn hàng thành công! Đã chia hoa hồng 60% cho khách.');
+        toast.success(data.message || 'Thêm đơn hàng thành công! Đã cộng tiền vào ví khách.');
         setShowAddOrderModal(false);
         setManualOrder({
           orderSn: '',
           subId: '',
+          userId: '',
           itemName: '',
           totalAmount: 500000,
           shopeeCommission: 50000,
+          customCashbackInput: '',
           status: 'APPROVED',
         });
         loadAllAdminData();
@@ -367,12 +374,15 @@ export default function AdminDashboardPage() {
 
   // Quick Open Add Order from a SubID
   const handleQuickAddOrderFromSubId = (subId: string, originalUrl?: string) => {
+    const matchedLink = linksList.find((l: any) => l.subId === subId);
     setManualOrder({
       orderSn: 'SP' + Math.random().toString().slice(2, 10),
       subId: subId,
+      userId: matchedLink?.userId || '',
       itemName: originalUrl ? 'Sản phẩm ' + originalUrl.slice(0, 30) + '...' : 'Đơn hàng Shopee',
       totalAmount: 500000,
       shopeeCommission: 50000,
+      customCashbackInput: '',
       status: 'APPROVED',
     });
     setShowAddOrderModal(true);
@@ -382,6 +392,7 @@ export default function AdminDashboardPage() {
   const handleUpdateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
       let customCashback: number | undefined = undefined;
+      let targetUserId: string | undefined = undefined;
 
       // Nếu Admin bấm Duyệt (APPROVED), hỗ trợ nhập/xác nhận số tiền hoàn cho khách
       if (newStatus === 'APPROVED') {
@@ -398,6 +409,20 @@ export default function AdminDashboardPage() {
           return;
         }
         customCashback = parsed;
+
+        // Nếu đơn chưa có user nhận tiền, cho phép Admin gán nhanh
+        if (!targetOrder?.userId) {
+          const userPhoneOrName = prompt('Đơn này chưa có người nhận. Nhập SĐT hoặc Tên khách để gán ví (ví dụ: 0386213036 hoặc 0395957039):');
+          if (userPhoneOrName) {
+            const found = usersList.find((u: any) => u.phone?.includes(userPhoneOrName.trim()) || (u.fullname && u.fullname.toLowerCase().includes(userPhoneOrName.trim().toLowerCase())));
+            if (found) {
+              targetUserId = found.id;
+              toast.info(`Đã gán đơn hàng cho khách: ${found.fullname || found.phone}`);
+            } else {
+              toast.warning('Không tìm thấy tài khoản phù hợp với SĐT/tên vừa nhập!');
+            }
+          }
+        }
       }
 
       const res = await fetch('/api/admin/orders', {
@@ -407,6 +432,7 @@ export default function AdminDashboardPage() {
           orderId,
           status: newStatus,
           userCashback: customCashback,
+          userId: targetUserId,
         }),
       });
       const data = await res.json();
@@ -2008,18 +2034,56 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
 
+              {/* Chọn khách hàng nhận tiền trực tiếp */}
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Khách Hàng Nhận Tiền Ví:
+                </label>
+                <select
+                  value={manualOrder.userId}
+                  onChange={(e) => setManualOrder({ ...manualOrder, userId: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-bold text-slate-800 dark:text-slate-200"
+                >
+                  <option value="">-- Tự động theo SubID (hoặc chọn bên dưới) --</option>
+                  {usersList.map((u: any) => (
+                    <option key={u.id} value={u.id}>
+                      {u.fullname || 'Khách'} - {u.phone} (Ví: {Number(u.balance || 0).toLocaleString('vi-VN')} đ)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Nhập số tiền hoàn trực tiếp */}
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Số Tiền Hoàn Muốn Cộng Vào Ví (VNĐ):
+                </label>
+                <input
+                  type="number"
+                  step={1000}
+                  value={manualOrder.customCashbackInput}
+                  onChange={(e) => setManualOrder({ ...manualOrder, customCashbackInput: e.target.value })}
+                  placeholder={`Ví dụ: 18000 hoặc 10000 (Mặc định ${settings.commissionUserPercent}% hoa hồng)`}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-bold text-emerald-600 text-sm"
+                />
+              </div>
+
               {/* Tính toán hiển thị trước */}
               <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 rounded-xl border border-emerald-200 text-[11px] space-y-1 text-emerald-800 dark:text-emerald-300">
                 <div className="flex justify-between">
-                  <span>Hoàn cho khách ({settings.commissionUserPercent}%):</span>
-                  <strong className="font-bold">
-                    {Math.round(manualOrder.shopeeCommission * (settings.commissionUserPercent / 100)).toLocaleString('vi-VN')} đ
+                  <span>Tiền cộng vào ví khách:</span>
+                  <strong className="font-bold text-emerald-600">
+                    {manualOrder.customCashbackInput
+                      ? Number(manualOrder.customCashbackInput).toLocaleString('vi-VN') + ' đ (Theo số Admin nhập)'
+                      : Math.round(manualOrder.shopeeCommission * (settings.commissionUserPercent / 100)).toLocaleString('vi-VN') + ' đ (Tự tính 60%)'}
                   </strong>
                 </div>
                 <div className="flex justify-between text-shopee-600 font-semibold">
-                  <span>Lợi nhuận của bạn ({settings.commissionAdminPercent}%):</span>
+                  <span>Lợi nhuận của bạn:</span>
                   <strong>
-                    {Math.round(manualOrder.shopeeCommission * (settings.commissionAdminPercent / 100)).toLocaleString('vi-VN')} đ
+                    {manualOrder.customCashbackInput
+                      ? Math.max(0, manualOrder.shopeeCommission - Number(manualOrder.customCashbackInput)).toLocaleString('vi-VN') + ' đ'
+                      : Math.round(manualOrder.shopeeCommission * (settings.commissionAdminPercent / 100)).toLocaleString('vi-VN') + ' đ'}
                   </strong>
                 </div>
               </div>

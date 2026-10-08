@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getCurrentAdmin } from '@/lib/auth';
+import { saveDbSnapshot } from '@/lib/db-sync';
 
 export async function GET() {
   try {
@@ -89,6 +90,8 @@ export async function PUT(req: Request) {
         }),
       ]);
 
+      saveDbSnapshot().catch(() => {});
+
       return NextResponse.json({
         success: true,
         message: 'Đã xác nhận thanh toán chuyển khoản cho khách hàng!',
@@ -110,6 +113,8 @@ export async function PUT(req: Request) {
           },
         }),
       ]);
+
+      saveDbSnapshot().catch(() => {});
 
       return NextResponse.json({
         success: true,

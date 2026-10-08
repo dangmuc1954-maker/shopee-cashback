@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth';
+import { saveDbSnapshot } from '@/lib/db-sync';
 
 export async function POST(req: Request) {
   try {
@@ -30,7 +31,7 @@ export async function POST(req: Request) {
     const settings = await prisma.systemSetting.findUnique({
       where: { id: 'DEFAULT' },
     });
-    const minAmount = settings?.minWithdrawAmount || 50000;
+    const minAmount = settings?.minWithdrawAmount || 20000;
 
     if (withdrawAmount < minAmount) {
       return NextResponse.json(
@@ -84,6 +85,8 @@ export async function POST(req: Request) {
 
       return { updatedUser, withdrawal };
     });
+
+    saveDbSnapshot().catch(() => {});
 
     return NextResponse.json({
       success: true,

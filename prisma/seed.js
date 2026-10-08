@@ -17,7 +17,7 @@ async function main() {
       shopeeAffId: '17352020564', // Shopee Affiliate ID chính xác của Admin
       commissionUserPercent: 60.0, // 60% tiền hoa hồng hoàn cho khách
       commissionAdminPercent: 40.0, // 40% lợi nhuận Admin giữ lại
-      minWithdrawAmount: 50000.0, // Ngưỡng rút tiền tối thiểu 50k
+      minWithdrawAmount: 20000.0, // Ngưỡng rút tiền tối thiểu 20k
       announcement: '🔥 Mua Sắm Thông Minh - Hoàn Tiền 60% Hoa Hồng Shopee Nhanh Chóng!',
     },
   });

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://muasamtietkiem.online'),
   title: 'Mua Sắm Tiết Kiệm - Hoàn Tiền Shopee Tự Động',
   description:
-    'Công cụ hoàn tiền mua sắm Shopee số 1 Việt Nam! Dán link sản phẩm bất kỳ để tự động nhận tiền hoàn vào ví. Rút tiền nhanh 24/7 về thẻ ngân hàng từ 50.000 VNĐ.',
+    'Công cụ hoàn tiền mua sắm Shopee số 1 Việt Nam! Dán link sản phẩm bất kỳ để tự động nhận tiền hoàn vào ví. Rút tiền nhanh 24/7 về thẻ ngân hàng từ 20.000 VNĐ.',
   keywords: [
     'hoàn tiền shopee',
     'muasamtietkiem.online',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Mua Sắm Tiết Kiệm - Hoàn Tiền Shopee Tự Động',
     description:
-      'Dán link sản phẩm Shopee bất kỳ để nhận tiền hoàn tự động vào ví. Rút tiền nhanh 24/7 về mọi ngân hàng từ 50k!',
+      'Dán link sản phẩm Shopee bất kỳ để nhận tiền hoàn tự động vào ví. Rút tiền nhanh 24/7 về mọi ngân hàng từ 20k!',
     url: 'https://muasamtietkiem.online',
     siteName: 'Mua Sắm Tiết Kiệm',
     images: [
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Mua Sắm Tiết Kiệm - Hoàn Tiền Shopee Tự Động',
-    description: 'Nhận tiền hoàn tự động khi mua sắm Shopee. Rút tiền mặt nhanh 24/7 từ 50k!',
+    description: 'Nhận tiền hoàn tự động khi mua sắm Shopee. Rút tiền mặt nhanh 24/7 từ 20k!',
     images: ['https://muasamtietkiem.online/og-image.jpg'],
   },
   robots: {
