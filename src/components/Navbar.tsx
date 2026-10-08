@@ -24,6 +24,16 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
+    try {
+      const cached = localStorage.getItem('shopee_user_session');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && parsed.phone) {
+          setUser(parsed);
+          setLoading(false);
+        }
+      }
+    } catch {}
     fetchCurrentUser();
   }, [pathname]);
 
@@ -33,11 +43,13 @@ export default function Navbar() {
       const data = await res.json();
       if (data.success && data.user) {
         setUser(data.user);
-      } else {
+        localStorage.setItem('shopee_user_session', JSON.stringify(data.user));
+      } else if (res.status === 401) {
+        localStorage.removeItem('shopee_user_session');
         setUser(null);
       }
     } catch (err) {
-      setUser(null);
+      // Giữ session offline nếu gặp lỗi kết nối tạm thời
     } finally {
       setLoading(false);
     }
@@ -45,6 +57,8 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
+      localStorage.removeItem('shopee_user_session');
+      localStorage.removeItem('pending_shopee_url');
       await fetch('/api/auth/logout', { method: 'POST' });
       setUser(null);
       router.push('/');

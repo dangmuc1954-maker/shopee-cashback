@@ -28,6 +28,9 @@ export default function LoginPage() {
       });
       const data = await res.json();
       if (data.success) {
+        if (typeof window !== 'undefined' && data.user) {
+          localStorage.setItem('shopee_user_session', JSON.stringify(data.user));
+        }
         toast.success('Đăng nhập thành công!');
         if (data.user?.role === 'ADMIN') {
           router.push('/admin');

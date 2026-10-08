@@ -14,7 +14,10 @@ export async function POST(req: Request) {
       );
     }
 
-    const cleanPhone = phone.trim().replace(/[^0-9]/g, '');
+    let cleanPhone = phone.trim().replace(/[^0-9]/g, '');
+    if (cleanPhone.startsWith('84') && cleanPhone.length === 11) {
+      cleanPhone = '0' + cleanPhone.slice(2);
+    }
 
     const user = await prisma.user.findUnique({
       where: { phone: cleanPhone },
@@ -39,6 +42,9 @@ export async function POST(req: Request) {
       id: user.id,
       role: user.role,
       phone: user.phone,
+      fullname: user.fullname,
+      balance: user.balance,
+      pendingBalance: user.pendingBalance,
     });
 
     cookies().set('auth_token', token, {

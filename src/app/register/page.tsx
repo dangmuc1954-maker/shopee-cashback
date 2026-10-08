@@ -35,6 +35,10 @@ export default function RegisterPage() {
       });
       const data = await res.json();
       if (data.success) {
+        if (typeof window !== 'undefined' && data.user) {
+          localStorage.setItem('shopee_user_session', JSON.stringify(data.user));
+        }
+        toast.success('Đăng ký thành công! Đã tự động kích hoạt tài khoản.');
         const hasPending = typeof window !== 'undefined' && localStorage.getItem('pending_shopee_url');
         if (hasPending) {
           router.push('/');

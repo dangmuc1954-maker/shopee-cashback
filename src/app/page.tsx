@@ -27,7 +27,9 @@ import {
   Video,
   Maximize2,
   Clock,
-  ShieldCheck
+  ShieldCheck,
+  Phone,
+  User as UserIcon
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -88,6 +90,13 @@ export default function HomePage() {
   const [copied, setCopied] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
 
+  // Trạng thái Form Đăng Nhập / Đăng Ký Nhanh Ngay Trong Modal (0ms Delay)
+  const [modalTab, setModalTab] = useState<'register' | 'login'>('register');
+  const [modalPhone, setModalPhone] = useState('');
+  const [modalPassword, setModalPassword] = useState('');
+  const [modalFullname, setModalFullname] = useState('');
+  const [modalAuthLoading, setModalAuthLoading] = useState(false);
+
   // Converted Product Estimator State
   const [previewProductPrice, setPreviewProductPrice] = useState(250000);
   const [previewCommRate, setPreviewCommRate] = useState(10);
@@ -113,11 +122,24 @@ export default function HomePage() {
 
   // Kiểm tra trạng thái đăng nhập khi vào trang chủ & khôi phục link chưa chuyển đổi
   useEffect(() => {
+    // 1. Phục hồi NGAY LẬP TỨC từ LocalStorage (0ms Delay - Không bao giờ lag/delay)
+    try {
+      const cached = localStorage.getItem('shopee_user_session');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && parsed.phone) {
+          setCurrentUser(parsed);
+        }
+      }
+    } catch {}
+
+    // 2. Đồng bộ ngầm với máy chủ để cập nhật số dư mới nhất
     fetch('/api/auth/me')
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.user) {
           setCurrentUser(data.user);
+          localStorage.setItem('shopee_user_session', JSON.stringify(data.user));
           // Khôi phục link nếu khách vừa đăng nhập / đăng ký xong
           const pendingUrl = localStorage.getItem('pending_shopee_url');
           if (pendingUrl) {
@@ -130,16 +152,28 @@ export default function HomePage() {
       .catch(() => {});
   }, []);
 
-  const handleConvert = async (e?: React.FormEvent) => {
+  const handleConvert = async (e?: React.FormEvent, overrideUser?: any) => {
     if (e) e.preventDefault();
-    if (!inputUrl.trim()) {
+    const urlToConvert = inputUrl.trim();
+    if (!urlToConvert) {
       toast.error('Vui lòng nhập đường link sản phẩm Shopee!');
       return;
     }
 
+    let activeUser = overrideUser || currentUser;
+    if (!activeUser && typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('shopee_user_session');
+        if (cached) {
+          activeUser = JSON.parse(cached);
+          if (activeUser) setCurrentUser(activeUser);
+        }
+      } catch {}
+    }
+
     // CHẶN KHÁCH VÃNG LAI: Bắt buộc đăng ký / đăng nhập để nhận hoàn tiền
-    if (!currentUser) {
-      localStorage.setItem('pending_shopee_url', inputUrl.trim());
+    if (!activeUser) {
+      localStorage.setItem('pending_shopee_url', urlToConvert);
       setShowAuthModal(true);
       return;
     }
@@ -150,12 +184,12 @@ export default function HomePage() {
       const res = await fetch('/api/convert-link', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: inputUrl }),
+        body: JSON.stringify({ url: urlToConvert }),
       });
       const data = await res.json();
 
       if (data.requireAuth) {
-        localStorage.setItem('pending_shopee_url', inputUrl.trim());
+        localStorage.setItem('pending_shopee_url', urlToConvert);
         setShowAuthModal(true);
         return;
       }
@@ -185,6 +219,58 @@ export default function HomePage() {
       toast.error('Không thể kết nối máy chủ, vui lòng thử lại!');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Xử lý Đăng Nhập / Đăng Ký Siêu Tốc Ngay Trong Modal (0ms Delay)
+  const handleModalAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanPhone = modalPhone.trim().replace(/[^0-9]/g, '');
+    const normalizedPhone = cleanPhone.startsWith('84') && cleanPhone.length === 11 ? '0' + cleanPhone.slice(2) : cleanPhone;
+    
+    if (!normalizedPhone || !modalPassword) {
+      toast.error('Vui lòng nhập số điện thoại và mật khẩu!');
+      return;
+    }
+
+    if (modalTab === 'register' && modalPassword.length < 6) {
+      toast.error('Mật khẩu tối thiểu 6 ký tự!');
+      return;
+    }
+
+    setModalAuthLoading(true);
+    try {
+      const endpoint = modalTab === 'register' ? '/api/auth/register' : '/api/auth/login';
+      const body = modalTab === 'register' 
+        ? { phone: normalizedPhone, password: modalPassword, fullname: modalFullname.trim() }
+        : { phone: normalizedPhone, password: modalPassword };
+
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+
+      if (data.success && data.user) {
+        setCurrentUser(data.user);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('shopee_user_session', JSON.stringify(data.user));
+        }
+        setShowAuthModal(false);
+        toast.success(modalTab === 'register' ? 'Đăng ký thành công! Đang tự động tạo link hoàn tiền...' : 'Đăng nhập thành công! Đang tạo link...');
+        
+        // Tự động chuyển đổi link ngay lập tức cho khách!
+        setTimeout(() => {
+          handleConvert(undefined, data.user);
+        }, 150);
+      } else {
+        toast.error(data.message || (modalTab === 'register' ? 'Đăng ký thất bại!' : 'Đăng nhập thất bại!'));
+      }
+    } catch (err) {
+      toast.error('Không thể kết nối máy chủ, vui lòng thử lại!');
+    } finally {
+      setModalAuthLoading(false);
     }
   };
 
@@ -854,10 +940,10 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* MODAL YÊU CẦU ĐĂNG NHẬP / ĐĂNG KÝ (DÀNH CHO KHÁCH VÃNG LAI) */}
+      {/* MODAL YÊU CẦU ĐĂNG KÝ / ĐĂNG NHẬP NHANH (0ms Delay - Không cần chuyển trang) */}
       {showAuthModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-2xl relative space-y-6">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-2xl relative space-y-5">
             {/* Nút đóng modal */}
             <button
               onClick={() => setShowAuthModal(false)}
@@ -868,63 +954,124 @@ export default function HomePage() {
             </button>
 
             {/* Header */}
-            <div className="text-center space-y-3 pt-2">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-shopee-500 to-amber-500 text-white flex items-center justify-center mx-auto shadow-lg shadow-orange-500/25">
-                <Lock className="w-7 h-7" />
+            <div className="text-center space-y-1.5 pt-1">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-shopee-500 to-amber-500 text-white flex items-center justify-center mx-auto shadow-md shadow-orange-500/25">
+                <Sparkles className="w-6 h-6" />
               </div>
-              <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                Đăng Nhập Để Nhận Hoàn Tiền
+              <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
+                {modalTab === 'register' ? 'Đăng Ký Nhận Hoàn Tiền' : 'Đăng Nhập Khách Hàng'}
               </h3>
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed px-2">
-                Hệ thống chỉ tạo link hoàn tiền cho tài khoản thành viên để đảm bảo tiền hoa hồng được ghi nhận và tự động cộng vào ví của bạn.
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed px-2">
+                {modalTab === 'register'
+                  ? 'Tạo tài khoản miễn phí chỉ 10 giây để lưu tiền hoàn vào ví của bạn'
+                  : 'Đăng nhập để tự động lưu tiền hoàn vào ví cá nhân'}
               </p>
             </div>
 
-            {/* Quyền lợi thành viên */}
-            <div className="bg-orange-50/70 dark:bg-orange-950/30 border border-orange-200/80 dark:border-orange-800/50 rounded-2xl p-4 space-y-2.5">
-              <div className="flex items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300 font-medium">
-                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                <span>Nhận hoàn tiền từ <strong>40% - 60%</strong> hoa hồng Shopee</span>
+            {/* Switch Tab Đăng Ký / Đăng Nhập */}
+            <div className="grid grid-cols-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
+              <button
+                type="button"
+                onClick={() => setModalTab('register')}
+                className={`py-2 text-xs font-bold rounded-lg transition-all ${
+                  modalTab === 'register'
+                    ? 'bg-white dark:bg-slate-900 text-shopee-600 dark:text-shopee-400 shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                }`}
+              >
+                Đăng Ký (30 Giây)
+              </button>
+              <button
+                type="button"
+                onClick={() => setModalTab('login')}
+                className={`py-2 text-xs font-bold rounded-lg transition-all ${
+                  modalTab === 'login'
+                    ? 'bg-white dark:bg-slate-900 text-shopee-600 dark:text-shopee-400 shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                }`}
+              >
+                Tôi Đã Có Tài Khoản
+              </button>
+            </div>
+
+            {/* Form thao tác trực tiếp */}
+            <form onSubmit={handleModalAuth} className="space-y-3">
+              {modalTab === 'register' && (
+                <div>
+                  <div className="relative">
+                    <UserIcon className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      value={modalFullname}
+                      onChange={(e) => setModalFullname(e.target.value)}
+                      placeholder="Họ và tên của bạn (Tùy chọn)"
+                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-shopee-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <div className="relative">
+                  <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="tel"
+                    value={modalPhone}
+                    onChange={(e) => setModalPhone(e.target.value)}
+                    placeholder="Số điện thoại nhận tiền (Ví dụ: 0987654321)"
+                    required
+                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-shopee-500 focus:outline-none"
+                  />
+                </div>
               </div>
-              <div className="flex items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300 font-medium">
-                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                <span>Rút tiền mặt 24/7 về thẻ ATM ngân hàng từ <strong>20.000 VNĐ</strong></span>
+
+              <div>
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="password"
+                    value={modalPassword}
+                    onChange={(e) => setModalPassword(e.target.value)}
+                    placeholder="Mật khẩu của bạn"
+                    required
+                    minLength={6}
+                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-shopee-500 focus:outline-none"
+                  />
+                </div>
               </div>
-              <div className="flex items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300 font-medium">
-                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                <span>Quản lý lịch sử đơn hàng và số dư tích lũy trọn đời</span>
+
+              <button
+                type="submit"
+                disabled={modalAuthLoading}
+                className="w-full py-3 rounded-xl gradient-shopee text-white font-bold text-xs shadow-md hover:opacity-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+              >
+                {modalAuthLoading ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <span>
+                      {modalTab === 'register' ? 'Đăng Ký & Nhận Link Hoàn Tiền Ngay' : 'Đăng Nhập & Tạo Link Ngay'}
+                    </span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </>
+                )}
+              </button>
+            </form>
+
+            {/* Quyền lợi thành viên tóm tắt */}
+            <div className="bg-orange-50/60 dark:bg-orange-950/20 border border-orange-200/60 dark:border-orange-900/40 rounded-xl p-3 space-y-1.5 text-[11px] text-slate-600 dark:text-slate-400">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                <span>Hoàn <strong>40% - 60%</strong> hoa hồng Shopee</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                <span>Rút tiền mặt 24/7 về STK từ <strong>20.000 VNĐ</strong></span>
               </div>
             </div>
 
-            {/* Nút bấm hành động */}
-            <div className="space-y-2.5">
-              <Link
-                href="/register"
-                onClick={() => {
-                  if (inputUrl.trim()) localStorage.setItem('pending_shopee_url', inputUrl.trim());
-                  setShowAuthModal(false);
-                }}
-                className="w-full py-3.5 px-4 rounded-xl gradient-shopee text-white font-bold text-center text-sm shadow-md hover:shadow-lg hover:opacity-95 active:scale-98 transition-all flex items-center justify-center gap-2"
-              >
-                <UserPlus className="w-4 h-4" />
-                <span>Đăng Ký Tài Khoản Mới (Chỉ 30 Giây)</span>
-              </Link>
-
-              <Link
-                href="/login"
-                onClick={() => {
-                  if (inputUrl.trim()) localStorage.setItem('pending_shopee_url', inputUrl.trim());
-                  setShowAuthModal(false);
-                }}
-                className="w-full py-3 px-4 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-center text-sm transition-all flex items-center justify-center gap-2"
-              >
-                <LogIn className="w-4 h-4" />
-                <span>Tôi Đã Có Tài Khoản? Đăng Nhập</span>
-              </Link>
-            </div>
-
-            <p className="text-[11px] text-center text-slate-400 dark:text-slate-500">
-              * Link sản phẩm bạn vừa dán sẽ được tự động giữ lại sau khi đăng nhập thành công.
+            <p className="text-[10px] text-center text-slate-400 dark:text-slate-500">
+              * Sau khi bấm, link sản phẩm bạn vừa dán sẽ tự động chuyển đổi ngay tức thì.
             </p>
           </div>
         </div>

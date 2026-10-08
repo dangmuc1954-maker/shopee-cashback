@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { hashPassword, createSessionToken } from '@/lib/auth';
 import { cookies } from 'next/headers';
+import { saveDbSnapshot } from '@/lib/db-sync';
 
 export async function POST(req: Request) {
   try {
@@ -14,7 +15,10 @@ export async function POST(req: Request) {
       );
     }
 
-    const cleanPhone = phone.trim().replace(/[^0-9]/g, '');
+    let cleanPhone = phone.trim().replace(/[^0-9]/g, '');
+    if (cleanPhone.startsWith('84') && cleanPhone.length === 11) {
+      cleanPhone = '0' + cleanPhone.slice(2);
+    }
     if (cleanPhone.length < 9 || cleanPhone.length > 11) {
       return NextResponse.json(
         { success: false, message: 'Số điện thoại không hợp lệ!' },
@@ -48,11 +52,16 @@ export async function POST(req: Request) {
       },
     });
 
+    saveDbSnapshot().catch(() => {});
+
     // Tạo cookie session đăng nhập
     const token = await createSessionToken({
       id: user.id,
       role: user.role,
       phone: user.phone,
+      fullname: user.fullname,
+      balance: user.balance,
+      pendingBalance: user.pendingBalance,
     });
 
     cookies().set('auth_token', token, {
